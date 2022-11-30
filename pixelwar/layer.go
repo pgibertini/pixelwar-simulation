@@ -13,7 +13,7 @@ import (
 func GetLayerFromPNG(filename string, first_pixel_x int, first_pixel_y int, length int, width int) (err error) {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 	path := "./pixelwar/" + filename
-	file, err := os.Open("./place_2022.png")
+	file, err := os.Open("./pixelwar/place_2022.png")
 
 	if err != nil {
 		return
@@ -90,7 +90,7 @@ func rgbaToHex(r uint32, g uint32, b uint32, a uint32) Color {
 
 	fmt.Println(r, g, b)
 
-	hex := r_h[0:2] + g_h[0:2] + b_h[0:2] // + a_h[0:2]
+	hex := "#" + r_h[0:2] + g_h[0:2] + b_h[0:2] // + a_h[0:2]
 
 	return Color(hex)
 } // Returns a Color in hexadecimal
