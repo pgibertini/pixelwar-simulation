@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"image"
 	"image/png"
-
 	"io"
 	"os"
+	"pixelwar/pixelwar"
 	"strconv"
 )
 
 func main() {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 
-	file, err := os.Open("./place_2022.png")
+	file, err := os.Open("./pixelwar/place_2022.png")
 
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -22,26 +22,40 @@ func main() {
 
 	defer file.Close()
 
-	pixels, err := getPixels(file, 256, 1524, 1524+16, 12)
+	pixels, err := getPixels(file, 251, 1516, 16, 12)
 
-	fmt.Println(pixels)
+	var filename string
+
+	fmt.Scanf("%s", &filename)
+
+	path := "./pixelwar/" + filename
+
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	for _, v := range pixels {
+		for _, v2 := range v {
+			f.WriteString(string(v2))
+			f.WriteString(" ")
+		}
+		f.WriteString("\n")
+	}
 }
 
-//256, 1524
-// area = 192 pixels
-
-// Get the bi-dimensional pixel array
-func getPixels(file io.Reader, begin_X int, begin_Y int, end_Y int, length_line int) ([][]Pixel, error) {
+func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_columns int) ([][]pixelwar.Color, error) {
 	img, _, err := image.Decode(file)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var pixels [][]Pixel
-	for y := begin_Y; y <= end_Y; y++ {
-		var row []Pixel
-		for x := begin_X; x < begin_X+length_line; x++ {
+	var pixels [][]pixelwar.Color
+	for y := begin_Y; y <= begin_Y+nb_lines; y++ {
+		var row []pixelwar.Color
+		for x := begin_X; x < begin_X+nb_columns; x++ {
 			row = append(row, rgbaToHex(img.At(x, y).RGBA()))
 		}
 		pixels = append(pixels, row)
@@ -50,8 +64,23 @@ func getPixels(file io.Reader, begin_X int, begin_Y int, end_Y int, length_line 
 	return pixels, nil
 }
 
-// img.At(x, y).RGBA() returns four uint32 values; we want a Pixel
-func rgbaToHex(r uint32, g uint32, b uint32, a uint32) Pixel {
-	hex := strconv.FormatUint(uint64(r), 16) + strconv.FormatUint(uint64(g), 16) + strconv.FormatUint(uint64(b), 16)
-	return Pixel{Color(hex)}
+func rgbaToHex(r uint32, g uint32, b uint32, a uint32) pixelwar.Color {
+	r_h := strconv.FormatUint(uint64(r), 16)
+	if r_h == "0" {
+		r_h = "0000"
+	}
+	g_h := strconv.FormatUint(uint64(g), 16)
+	if g_h == "0" {
+		g_h = "0000"
+	}
+	b_h := strconv.FormatUint(uint64(b), 16)
+	if b_h == "0" {
+		b_h = "0000"
+	}
+
+	fmt.Println(r, g, b)
+
+	hex := r_h[0:2] + g_h[0:2] + b_h[0:2]
+
+	return pixelwar.Color(hex)
 }
