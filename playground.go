@@ -1,4 +1,4 @@
-package main
+package pixelwar
 
 type Playground struct {
 	length int
