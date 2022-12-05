@@ -1,4 +1,4 @@
-package pixelwar
+package painting
 
 import (
 	"fmt"
@@ -9,11 +9,13 @@ import (
 	"strconv"
 )
 
-// Creates a layer file of a drawing's pixels
+// TODO: change "layer" to "layout" as it makes more sense ?
+
+// GetLayerFromPNG creates a layer file of a painting's pixels
 func GetLayerFromPNG(filename string, first_pixel_x int, first_pixel_y int, length int, width int) (err error) {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
-	path := "./pixelwar/" + filename
-	file, err := os.Open("./pixelwar/place_2022.png")
+	path := "./painting/" + filename
+	file, err := os.Open("./painting/place_2022.png")
 
 	if err != nil {
 		return

@@ -1,8 +1,8 @@
-package pixelwar
+package painting
 
-type Color string
-
-const ( // https://lospec.com/palette-list/r-place-2022-day3
+// colors list from https://lospec.com/palette-list/r-place-2022-day3
+// TODO: make a const slice "colorPalette" instead of these 32 const string, and use the type "color" (or better: colorRGBA)
+const (
 	c1  = "6d001a"
 	c2  = "be0039"
 	c3  = "ff4500"
@@ -37,20 +37,16 @@ const ( // https://lospec.com/palette-list/r-place-2022-day3
 	c32 = "ffffff"
 )
 
-type Pixel struct {
-	color Color
-}
-
-func (p *Pixel) GetPixelColor() Color {
+func (p *Pixel) GetColor() Color {
 	return p.color
 }
 
-func (p *Pixel) SetPixelColor(color Color) {
+func (p *Pixel) SetColor(color Color) {
 	p.color = color
 }
 
 func NewPixel() *Pixel {
 	return &Pixel{
-		color: c32,
+		color: c28,
 	}
 }
