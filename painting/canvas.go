@@ -20,6 +20,6 @@ func NewCanvas(l int, w int) *Canvas {
 	return &Canvas{
 		height: l,
 		width:  w,
-		zone:   grid,
+		grid:   grid,
 	}
 }
