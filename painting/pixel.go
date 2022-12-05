@@ -1,7 +1,7 @@
 package painting
 
 // colors list from https://lospec.com/palette-list/r-place-2022-day3
-// TODO: make a const slice "colorPalette" instead of theses 32 const string, and use the type "color" (or better: colorRGBA)
+// TODO: make a const slice "colorPalette" instead of these 32 const string, and use the type "color" (or better: colorRGBA)
 const (
 	c1  = "6d001a"
 	c2  = "be0039"
