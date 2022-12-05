@@ -1,14 +1,14 @@
 package painting
 
-func (p *Playground) GetLength() int {
-	return p.length
-}
-
-func (p *Playground) GetWidth() int {
+func (p *Canvas) GetWidth() int {
 	return p.width
 }
 
-func NewPlayground(l int, w int) *Playground {
+func (p *Canvas) GetHeight() int {
+	return p.height
+}
+
+func NewCanvas(l int, w int) *Canvas {
 	playzone := make([][]*Pixel, l)
 	for i := 0; i < l; i++ {
 		playzone[i] = make([]*Pixel, w)
@@ -16,8 +16,9 @@ func NewPlayground(l int, w int) *Playground {
 			playzone[i][j] = NewPixel()
 		}
 	}
-	return &Playground{
-		length: l,
+
+	return &Canvas{
+		height: l,
 		width:  w,
 		zone:   playzone,
 	}
