@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"image"
 	"image/png"
 	"io"
 	"os"
-	"pixelwar/painting"
 	"strconv"
 )
 
