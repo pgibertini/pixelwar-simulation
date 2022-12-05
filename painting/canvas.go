@@ -9,17 +9,17 @@ func (p *Canvas) GetHeight() int {
 }
 
 func NewCanvas(l int, w int) *Canvas {
-	playzone := make([][]*Pixel, l)
+	grid := make([][]*Pixel, l)
 	for i := 0; i < l; i++ {
-		playzone[i] = make([]*Pixel, w)
+		grid[i] = make([]*Pixel, w)
 		for j := 0; j < w; j++ {
-			playzone[i][j] = NewPixel()
+			grid[i][j] = NewPixel()
 		}
 	}
 
 	return &Canvas{
 		height: l,
 		width:  w,
-		zone:   playzone,
+		zone:   grid,
 	}
 }
