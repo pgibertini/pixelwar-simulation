@@ -1,8 +1,7 @@
-package pixelwar
+package painting
 
-type Color string
-
-const ( // https://lospec.com/palette-list/r-place-2022-day3
+// colors list from https://lospec.com/palette-list/r-place-2022-day3
+const (
 	c1  = "6d001a"
 	c2  = "be0039"
 	c3  = "ff4500"
@@ -36,10 +35,6 @@ const ( // https://lospec.com/palette-list/r-place-2022-day3
 	c31 = "d4d7d9"
 	c32 = "ffffff"
 )
-
-type Pixel struct {
-	color Color
-}
 
 func (p *Pixel) GetPixelColor() Color {
 	return p.color
