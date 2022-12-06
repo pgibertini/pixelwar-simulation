@@ -1,7 +1,6 @@
 package painting
 
 // colors list from https://lospec.com/palette-list/r-place-2022-day3
-// TODO: make a const slice "colorPalette" instead of these 32 const string, and use the type "color" (or better: colorRGBA)
 var colorPalette = [...]Color{
 	{109, 0, 26, 255},
 	{190, 0, 57, 255},

@@ -9,13 +9,11 @@ import (
 	"strconv"
 )
 
-// TODO: change "layer" to "layout" as it makes more sense ?
-
-// GetLayerFromPNG creates a layout file of a painting's pixels
-func GetLayoutFromPNG(filename string, first_pixel_x int, first_pixel_y int, length int, width int) (err error) {
+// GetLayoutFromPNG creates a layout file of a painting's pixels
+func GetLayoutFromPNG(path_original_file string, filename string, first_pixel_x int, first_pixel_y int, length int, width int) (err error) {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
-	path := "./painting/" + filename
-	file, err := os.Open("./painting/place_2022.png")
+	path := "./img/" + filename
+	file, err := os.Open(path_original_file)
 
 	if err != nil {
 		return
@@ -90,4 +88,4 @@ func rgbaToString(r uint32, g uint32, b uint32, a uint32) string {
 	hex := "#" + r_h[0:2] + g_h[0:2] + b_h[0:2] + a_h[0:2]
 
 	return hex
-} // Returns a Color in hexadecimal
+} // Returns a string representing a RGBA color in hexadecimal
