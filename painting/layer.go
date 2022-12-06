@@ -11,8 +11,8 @@ import (
 
 // TODO: change "layer" to "layout" as it makes more sense ?
 
-// GetLayerFromPNG creates a layer file of a painting's pixels
-func GetLayerFromPNG(filename string, first_pixel_x int, first_pixel_y int, length int, width int) (err error) {
+// GetLayerFromPNG creates a layout file of a painting's pixels
+func GetLayoutFromPNG(filename string, first_pixel_x int, first_pixel_y int, length int, width int) (err error) {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 	path := "./painting/" + filename
 	file, err := os.Open("./painting/place_2022.png")
@@ -50,27 +50,27 @@ func GetLayerFromPNG(filename string, first_pixel_x int, first_pixel_y int, leng
 } // Returns eventually an error
 
 // Iterates for each pixel of the area calculated with the four last parameters
-func getPixels(file io.Reader, first_pixel_x int, first_pixel_y int, length int, width int) ([][]Color, error) {
+func getPixels(file io.Reader, first_pixel_x int, first_pixel_y int, length int, width int) ([][]string, error) {
 	img, _, err := image.Decode(file)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var pixels [][]Color
+	var pixels [][]string
 	for y := first_pixel_y; y <= first_pixel_y+width; y++ {
-		var row []Color
+		var row []string
 		for x := first_pixel_x; x < first_pixel_x+length; x++ {
-			row = append(row, rgbaToHex(img.At(x, y).RGBA()))
+			row = append(row, rgbaToString(img.At(x, y).RGBA()))
 		}
 		pixels = append(pixels, row)
 	}
 
 	return pixels, nil
-} // Returns a 2x2 matrix of Color, and eventually an error
+} // Returns a 2x2 matrix of string, and eventually an error
 
 // Converts RGBA values to a single string representing hexadecimal value of a pixel
-func rgbaToHex(r uint32, g uint32, b uint32, a uint32) Color {
+func rgbaToString(r uint32, g uint32, b uint32, a uint32) string {
 	r_h := strconv.FormatUint(uint64(r), 16)
 	if r_h == "0" {
 		r_h = "0000"
@@ -83,16 +83,11 @@ func rgbaToHex(r uint32, g uint32, b uint32, a uint32) Color {
 	if b_h == "0" {
 		b_h = "0000"
 	}
-	/* Don't uncomment until the value is required
 	a_h := strconv.FormatUint(uint64(a), 16)
-	if a_h == "0" {
-		a_h = "0000"
-	}
-	*/
 
 	fmt.Println(r, g, b)
 
-	hex := "#" + r_h[0:2] + g_h[0:2] + b_h[0:2] // + a_h[0:2]
+	hex := "#" + r_h[0:2] + g_h[0:2] + b_h[0:2] + a_h[0:2]
 
-	return Color(hex)
+	return hex
 } // Returns a Color in hexadecimal

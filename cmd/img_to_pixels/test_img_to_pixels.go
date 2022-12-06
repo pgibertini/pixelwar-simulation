@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"image"
 	"image/png"
 	"io"
@@ -45,16 +44,16 @@ func main() {
 	}
 }
 
-func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_columns int) ([][]painting.Color, error) {
+func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_columns int) ([][]string, error) {
 	img, _, err := image.Decode(file)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var pixels [][]painting.Color
+	var pixels [][]string
 	for y := begin_Y; y <= begin_Y+nb_lines; y++ {
-		var row []painting.Color
+		var row []string
 		for x := begin_X; x < begin_X+nb_columns; x++ {
 			row = append(row, rgbaToHex(img.At(x, y).RGBA()))
 		}
@@ -64,7 +63,7 @@ func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_column
 	return pixels, nil
 }
 
-func rgbaToHex(r uint32, g uint32, b uint32, a uint32) painting.Color {
+func rgbaToHex(r uint32, g uint32, b uint32, a uint32) string {
 	r_h := strconv.FormatUint(uint64(r), 16)
 	if r_h == "0" {
 		r_h = "0000"
@@ -77,10 +76,11 @@ func rgbaToHex(r uint32, g uint32, b uint32, a uint32) painting.Color {
 	if b_h == "0" {
 		b_h = "0000"
 	}
+	a_h := strconv.FormatUint(uint64(a), 16)
 
 	fmt.Println(r, g, b)
 
-	hex := r_h[0:2] + g_h[0:2] + b_h[0:2]
+	hex := r_h[0:2] + g_h[0:2] + b_h[0:2] + a_h[0:2]
 
-	return painting.Color(hex)
+	return hex
 }
