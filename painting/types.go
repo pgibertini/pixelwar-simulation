@@ -2,7 +2,7 @@ package painting
 
 import "image/color"
 
-type Color color.RGBA
+type Color color.RGBA // TODO: use image.color.RGBA data structures instead of a string
 
 type Pixel struct {
 	color Color
