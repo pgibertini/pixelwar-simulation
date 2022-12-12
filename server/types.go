@@ -34,6 +34,11 @@ type paintPixelRequest struct {
 }
 
 type getPixelRequest struct {
-	X int `json:"x"`
-	Y int `json:"y"`
+	X       int    `json:"x"`
+	Y       int    `json:"y"`
+	PlaceID string `json:"place-id"`
+}
+
+type getPixelResponse struct {
+	Color painting.HexColor `json:"color"`
 }
