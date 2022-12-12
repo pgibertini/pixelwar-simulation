@@ -30,8 +30,7 @@ func (srv *Server) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/test_request", srv.makeTestRequest)
 	mux.HandleFunc("/new_place", srv.doNewPlace)
-
-	// TODO: add "paintPixel" function
+	mux.HandleFunc("/paint_pixel", srv.doPaintPixel)
 
 	// Création d'un serveur web
 	s := &http.Server{
