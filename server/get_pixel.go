@@ -19,7 +19,7 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	defer srv.Unlock()
 
 	// vérification de la méthode de la requête
-	if !srv.checkMethod("GET", w, r) {
+	if !srv.checkMethod("POST", w, r) {
 		return
 	}
 
@@ -33,6 +33,7 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 
 	// traitement de la requête
 	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor().ToHex()
+	fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
 
 	resp := getPixelResponse{Color: color}
 	w.WriteHeader(http.StatusOK)
