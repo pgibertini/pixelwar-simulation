@@ -11,7 +11,7 @@ func NewServer(id string, addr string) *Server {
 	return &Server{
 		identifier: id,
 		address:    addr,
-		// TODO: add a slices a Canvas (like in the vote API)
+		places:     make(map[string]*Place),
 	}
 }
 
