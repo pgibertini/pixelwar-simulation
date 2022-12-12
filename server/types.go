@@ -17,10 +17,6 @@ type Place struct {
 	canvas *painting.Canvas
 }
 
-type testRequest struct {
-	Value string `json:"value"`
-}
-
 type newPlaceRequest struct {
 	Width  int `json:"width"`
 	Height int `json:"height"`
@@ -35,4 +31,9 @@ type paintPixelRequest struct {
 	Y       int               `json:"y"`
 	Color   painting.HexColor `json:"color"`
 	PlaceID string            `json:"place-id"`
+}
+
+type getPixelRequest struct {
+	X int `json:"x"`
+	Y int `json:"y"`
 }

@@ -1,9 +1,16 @@
 package painting
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 func (h HexColor) ToRGB() (Color, error) {
 	return Hex2RGB(h)
+}
+
+func (c Color) ToHex() HexColor {
+	return RGB2Hex(c)
 }
 
 func Hex2RGB(hex HexColor) (rgb Color, err error) {
@@ -20,5 +27,11 @@ func Hex2RGB(hex HexColor) (rgb Color, err error) {
 		A: 255,
 	}
 
+	return
+}
+
+func RGB2Hex(rgb Color) (hex HexColor) {
+	var R, G, B uint8
+	hex = HexColor(fmt.Sprintf("%02x%02x%02x", R, G, B))
 	return
 }
