@@ -28,7 +28,6 @@ func (srv *Server) checkMethod(method string, w http.ResponseWriter, r *http.Req
 func (srv *Server) Start() {
 	// Multiplexage des différentes requêtes possibles
 	mux := http.NewServeMux()
-	mux.HandleFunc("/test_request", srv.makeTestRequest)
 	mux.HandleFunc("/new_place", srv.doNewPlace)
 	mux.HandleFunc("/paint_pixel", srv.doPaintPixel)
 
