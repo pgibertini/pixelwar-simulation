@@ -19,7 +19,6 @@ func (*Server) decodeTestRequest(r *http.Request) (req testRequest, err error) {
 } // Retourne une requête de type "testRequest", et éventuellement une erreur
 
 func (srv *Server) makeTestRequest(w http.ResponseWriter, r *http.Request) {
-
 	// Verrouillage du serveur le temps de créer la requête
 	srv.Lock()
 	defer srv.Unlock()

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -14,12 +15,22 @@ func NewServer(id string, addr string) *Server {
 	}
 }
 
+// checkMethod test a method
+func (srv *Server) checkMethod(method string, w http.ResponseWriter, r *http.Request) bool {
+	if r.Method != method {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "method %q not allowed", r.Method)
+		return false
+	}
+	return true
+}
+
 func (srv *Server) Start() {
 	// Multiplexage des différentes requêtes possibles
 	mux := http.NewServeMux()
 	mux.HandleFunc("/test_request", srv.makeTestRequest)
+	mux.HandleFunc("/new_place", srv.doNewPlace)
 
-	// TODO: add "newCanvas" function
 	// TODO: add "paintPixel" function
 
 	// Création d'un serveur web
@@ -30,6 +41,6 @@ func (srv *Server) Start() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20}
 
-	log.Println("Launching server server:", srv.address)
+	log.Println("Listening on", srv.address)
 	go log.Fatal(s.ListenAndServe())
 }

@@ -8,9 +8,9 @@ func (p *Canvas) GetHeight() int {
 	return p.height
 }
 
-func NewCanvas(l int, w int) *Canvas {
-	grid := make([][]*Pixel, l)
-	for i := 0; i < l; i++ {
+func NewCanvas(h int, w int) *Canvas {
+	grid := make([][]*Pixel, h)
+	for i := 0; i < h; i++ {
 		grid[i] = make([]*Pixel, w)
 		for j := 0; j < w; j++ {
 			grid[i][j] = NewPixel()
@@ -18,7 +18,7 @@ func NewCanvas(l int, w int) *Canvas {
 	}
 
 	return &Canvas{
-		height: l,
+		height: h,
 		width:  w,
 		grid:   grid,
 	}
