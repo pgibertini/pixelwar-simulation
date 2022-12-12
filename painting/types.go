@@ -13,5 +13,5 @@ type Pixel struct {
 type Canvas struct {
 	height int
 	width  int
-	grid   [][]*Pixel
+	Grid   [][]*Pixel
 }

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (*Server) decodeNewBallotRequest(r *http.Request) (req newPlaceRequest, err error) {
+func (*Server) decodeNewPlaceRequest(r *http.Request) (req newPlaceRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -25,7 +25,7 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// décodage de la requête
-	req, err := srv.decodeNewBallotRequest(r)
+	req, err := srv.decodeNewPlaceRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err.Error())

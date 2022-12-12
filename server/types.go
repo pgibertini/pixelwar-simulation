@@ -29,3 +29,10 @@ type newPlaceRequest struct {
 type newPlaceResponse struct {
 	PlaceID string `json:"place-id"`
 }
+
+type paintPixelRequest struct {
+	X       int               `json:"x"`
+	Y       int               `json:"y"`
+	Color   painting.HexColor `json:"color"`
+	PlaceID string            `json:"place-id"`
+}

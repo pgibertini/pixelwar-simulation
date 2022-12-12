@@ -2,7 +2,7 @@ package painting
 
 import "strconv"
 
-func (h HexColor) toRGB() (Color, error) {
+func (h HexColor) ToRGB() (Color, error) {
 	return Hex2RGB(h)
 }
 
