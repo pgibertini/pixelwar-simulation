@@ -55,6 +55,13 @@ func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_column
 	for y := begin_Y; y <= begin_Y+nb_lines; y++ {
 		var row []string
 		for x := begin_X; x < begin_X+nb_columns; x++ {
+			r, g, b, a := img.At(x, y).RGBA()
+			fmt.Println("===========================")
+			fmt.Println("r = ", r)
+			fmt.Println("g = ", g)
+			fmt.Println("b = ", b)
+			fmt.Println("a = ", a)
+			fmt.Println("===========================")
 			row = append(row, rgbaToHex(img.At(x, y).RGBA()))
 		}
 		pixels = append(pixels, row)
