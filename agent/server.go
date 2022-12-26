@@ -1,17 +1,18 @@
-package server
+package agent
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
-
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 )
 
 func NewServer(id string, addr string) *Server {
+	cin := make(chan (interface{}))
 	return &Server{
 		identifier: id,
 		address:    addr,
+		Cin:        cin,
 		// TODO: add a slices a Canvas (like in the vote API)
 	}
 }
@@ -20,8 +21,6 @@ func (srv *Server) Start() {
 	// Multiplexage des différentes requêtes possibles
 	mux := http.NewServeMux()
 	mux.HandleFunc("/test_request", srv.makeTestRequest)
-	mux.HandleFunc("/register_aw", srv.registerAWRequest)
-	mux.HandleFunc("/register_am", srv.registerAMRequest)
 
 	// TODO: add "newCanvas" function
 	// TODO: add "paintPixel" function
@@ -35,9 +34,36 @@ func (srv *Server) Start() {
 		MaxHeaderBytes: 1 << 20}
 
 	log.Println("Launching REST server:", srv.address)
+	go func() {
+		for {
+			value := <-srv.Cin
+			switch value.(type) {
+			case *AgentManager:
+				srv.registerManager(value.(*AgentManager))
+			case *AgentWorker:
+				srv.registerWorker(value.(*AgentWorker))
+			default:
+				fmt.Println("Error: bad request")
+			}
+		}
+	}()
 	go log.Fatal(s.ListenAndServe())
 }
 
-func (srv *Server) GetManagers() []*agent.AgentManager {
+func (srv *Server) registerManager(am *AgentManager) {
+	fmt.Printf("Registering a manager. ID = %s\n", am.id)
+	srv.ams = append(srv.ams, am)
+}
+
+func (srv *Server) registerWorker(aw *AgentWorker) {
+	fmt.Printf("Registering a worker. ID = %s\n", aw.id)
+	srv.aws = append(srv.aws, aw)
+}
+
+func (srv *Server) GetManagers() []*AgentManager {
 	return srv.ams
+}
+
+func (srv *Server) GetWorkers() []*AgentWorker {
+	return srv.aws
 }

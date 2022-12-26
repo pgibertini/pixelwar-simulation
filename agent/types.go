@@ -1,9 +1,16 @@
 package agent
 
-type RegisterAWRequest struct {
-	Address *AgentWorker `json:"address"`
+import "sync"
+
+type Server struct {
+	sync.Mutex
+	identifier string
+	address    string
+	ams        []*AgentManager
+	aws        []*AgentWorker
+	Cin        chan interface{}
 }
 
-type RegisterAMRequest struct {
-	Address *AgentManager `json:"address"`
+type testRequest struct {
+	Value string `json:"value"`
 }
