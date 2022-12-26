@@ -42,6 +42,9 @@ func (srv *Server) Start() {
 				srv.registerManager(value.(*AgentManager))
 			case *AgentWorker:
 				srv.registerWorker(value.(*AgentWorker))
+			case findWorkersRequest:
+				srv.findWorkersRespond(value.(findWorkersRequest))
+				(srv.ams[getManagerIndex(srv.ams, (value.(findWorkersRequest)).Id_manager)]).C_findWorkers <- srv.findWorkersRespond(value.(findWorkersRequest))
 			default:
 				fmt.Println("Error: bad request")
 			}
@@ -58,6 +61,16 @@ func (srv *Server) registerManager(am *AgentManager) {
 func (srv *Server) registerWorker(aw *AgentWorker) {
 	fmt.Printf("Registering a worker. ID = %s\n", aw.id)
 	srv.aws = append(srv.aws, aw)
+}
+
+func (srv *Server) findWorkersRespond(req findWorkersRequest) findWorkersResponse {
+	var resp findWorkersResponse
+	for _, v := range srv.aws {
+		if containsHobby(v.hobbies, req.hobby) {
+			resp.workers = append(resp.workers, v)
+		}
+	}
+	return resp
 }
 
 func (srv *Server) GetManagers() []*AgentManager {

@@ -2,6 +2,7 @@ package agent
 
 import (
 	"fmt"
+	"sync"
 
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 )
@@ -15,10 +16,12 @@ type AgentWorker struct {
 }
 
 type AgentManager struct {
-	id    string
-	agts  []string
-	hobby string
-	Srv   *Server
+	id            string
+	agts          []*AgentWorker
+	hobby         string
+	Srv           *Server
+	Cin           chan interface{}
+	C_findWorkers chan findWorkersResponse
 }
 
 func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker {
@@ -31,11 +34,7 @@ func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker
 }
 
 func (aw *AgentWorker) Start() {
-	err := aw.register()
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	aw.register()
 }
 
 func (aw *AgentWorker) GetID() string {
@@ -50,46 +49,101 @@ func (aw *AgentWorker) drawOnePixel(pixel painting.Pixel) {
 
 }
 
-func (aw *AgentWorker) register() (err error) {
-	srv := aw.Srv
-	srv.Cin <- aw
-
-	if err != nil {
-		return
-	}
-
-	return
+func (aw *AgentWorker) register() {
+	(aw.Srv).Cin <- aw
 }
 
 // ============================ AgentManager ============================
 
 func NewAgentManager(idAgt string, hobbyAgt string, srv *Server) *AgentManager {
+	cin := make(chan interface{})
+	cout := make(chan findWorkersResponse)
 	return &AgentManager{
-		id:    idAgt,
-		hobby: hobbyAgt,
-		Srv:   srv}
+		id:            idAgt,
+		hobby:         hobbyAgt,
+		Srv:           srv,
+		Cin:           cin,
+		C_findWorkers: cout}
 }
 
 func (am *AgentManager) Start() {
-	err := am.register()
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	am.register()
+	am.updateWorkers()
 }
 
 func (am *AgentManager) GetID() string {
 	return am.id
 }
 
-func (am *AgentManager) register() (err error) {
-	srv := am.Srv
+func (am *AgentManager) register() {
+	(am.Srv).Cin <- am
+}
 
-	srv.Cin <- am
+func (am *AgentManager) updateWorkers() {
+	// Not sure of this. Can AgentWorkers change their hobbies?
+	for k, v := range am.agts {
+		if !containsHobby(v.hobbies, am.hobby) {
+			am.agts = remove(am.agts, k)
+		}
+	}
+	req := findWorkersRequest{am.id, am.hobby}
+	(am.Srv).Cin <- req
 
-	if err != nil {
-		return
+	fmt.Println("Voici ma liste de workers : ", am.agts)
+
+	var wg sync.WaitGroup
+	var resp findWorkersResponse
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println("J'attends une réponse du serveur...")
+		resp = <-am.C_findWorkers
+	}()
+
+	wg.Wait()
+	fmt.Println("Réponse reçue ! : ", resp)
+
+	for _, v := range resp.workers {
+		if exists(am.agts, v.id) == -1 {
+			am.agts = append(am.agts, v)
+		}
 	}
 
-	return
+	fmt.Println("Voici ma liste finale de workers : ", am.agts)
+
+}
+
+// ============================ Utilities ============================
+
+func containsHobby(hobbies []string, hobby string) bool {
+	for _, v := range hobbies {
+		if v == hobby {
+			return true
+		}
+	}
+	return false
+}
+
+func exists(s []*AgentWorker, id string) int {
+	for k, v := range s {
+		if v.id == id {
+			return k
+		}
+	}
+	return -1
+}
+
+func getManagerIndex(s []*AgentManager, id string) int {
+	for k, v := range s {
+		if v.id == id {
+			return k
+		}
+	}
+	return -1
+}
+
+func remove(s []*AgentWorker, i int) []*AgentWorker {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
 }

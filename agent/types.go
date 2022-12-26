@@ -14,3 +14,12 @@ type Server struct {
 type testRequest struct {
 	Value string `json:"value"`
 }
+
+type findWorkersRequest struct {
+	Id_manager string
+	hobby      string
+}
+
+type findWorkersResponse struct {
+	workers []*AgentWorker
+}
