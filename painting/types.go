@@ -4,6 +4,8 @@ import "image/color"
 
 type Color color.RGBA
 
+type HexColor string
+
 type Pixel struct {
 	color Color
 }
@@ -11,7 +13,7 @@ type Pixel struct {
 type Canvas struct {
 	height int
 	width  int
-	grid   [][]*Pixel
+	Grid   [][]*Pixel
 }
 
 type PixelToPlace struct {
