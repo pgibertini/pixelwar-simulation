@@ -75,7 +75,7 @@
 
 | Code retour | Signification |
 |-------------|---------------|
-| `200`       | pixel placé   |
+| `200`       | OK            |
 | `400`       | bad request   |
 
 - Objet `JSON` renvoyé (si `201`)
