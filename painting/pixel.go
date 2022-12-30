@@ -63,3 +63,7 @@ func NewPixelToPlaceLocal(p Pixel, x int, y int) PixelToPlace {
 		pixel: p,
 	}
 }
+
+func (p *PixelToPlace) GetCoords() (int, int) {
+	return p.x, p.y
+}

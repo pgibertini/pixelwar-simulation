@@ -40,6 +40,18 @@ func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker
 
 func (aw *AgentWorker) Start() {
 	aw.register()
+
+	go func() {
+		for {
+			value := <-aw.Cout
+			switch value.(type) {
+			case sendPixelsRequest:
+				aw.tab = append(aw.tab, value.(sendPixelsRequest).pixels...)
+			default:
+				fmt.Println("Error: bad request")
+			}
+		}
+	}()
 }
 
 func (aw *AgentWorker) GetID() string {
@@ -172,6 +184,14 @@ func (am *AgentManager) sendPixelsToWorkers() {
 
 		start += plusOne
 		plusOne = 0
+
+		var pixelsToSend []painting.PixelToPlace
+		for j := low; j <= high; j++ {
+			pixelsToSend = append(pixelsToSend, am.bufferImgLayout[j])
+			//TODO : send pixels to workers channels
+		}
+		request := sendPixelsRequest{pixelsToSend, am.id}
+		am.agts[i].Cout <- request
 	}
 }
 
