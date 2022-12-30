@@ -1,4 +1,4 @@
-package server
+package agent
 
 import (
 	"bytes"
@@ -7,14 +7,14 @@ import (
 	"net/http"
 )
 
-func (*Server) decodePaintPixelRequest(r *http.Request) (req paintPixelRequest, err error) {
+func (*Server) decodeGetPixelRequest(r *http.Request) (req getPixelRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
 	return
 }
 
-func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	srv.Lock()
 	defer srv.Unlock()
 
@@ -24,18 +24,20 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// décodage de la requête
-	req, err := srv.decodePaintPixelRequest(r)
+	req, err := srv.decodeGetPixelRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err.Error())
 		return
 	}
 
-	// TODO: check if the cooldown has been respected
-
 	// traitement de la requête
-	rgb, err := req.Color.ToRGB()
-	srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].SetColor(rgb)
+	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor().ToHex()
+	fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
 
+	resp := getPixelResponse{Color: color}
 	w.WriteHeader(http.StatusOK)
+
+	serial, _ := json.Marshal(resp)
+	w.Write(serial)
 }
