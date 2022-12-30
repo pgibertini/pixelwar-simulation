@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"strconv"
+
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 )
 
 func main() {
@@ -25,9 +27,11 @@ func main() {
 
 	var filename string
 
+	painting.StringToColor("#10000000")
+
 	fmt.Scanf("%s", &filename)
 
-	path := "./painting/img" + filename
+	path := "./painting/img/" + filename
 
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -40,7 +44,7 @@ func main() {
 			f.WriteString(string(v2))
 			f.WriteString(" ")
 		}
-		f.WriteString("\n")
+		f.WriteString("!\n")
 	}
 }
 
@@ -55,14 +59,7 @@ func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_column
 	for y := begin_Y; y <= begin_Y+nb_lines; y++ {
 		var row []string
 		for x := begin_X; x < begin_X+nb_columns; x++ {
-			r, g, b, a := img.At(x, y).RGBA()
-			fmt.Println("===========================")
-			fmt.Println("r = ", r)
-			fmt.Println("g = ", g)
-			fmt.Println("b = ", b)
-			fmt.Println("a = ", a)
-			fmt.Println("===========================")
-			row = append(row, rgbaToHex(img.At(x, y).RGBA()))
+			row = append(row, rgbaToString(img.At(x, y).RGBA()))
 		}
 		pixels = append(pixels, row)
 	}
@@ -70,7 +67,8 @@ func getPixels(file io.Reader, begin_X int, begin_Y int, nb_lines int, nb_column
 	return pixels, nil
 }
 
-func rgbaToHex(r uint32, g uint32, b uint32, a uint32) string {
+// Converts RGBA values to a single string representing hexadecimal value of a pixel
+func rgbaToString(r uint32, g uint32, b uint32, a uint32) string {
 	r_h := strconv.FormatUint(uint64(r), 16)
 	if r_h == "0" {
 		r_h = "0000"
@@ -87,7 +85,7 @@ func rgbaToHex(r uint32, g uint32, b uint32, a uint32) string {
 
 	fmt.Println(r, g, b)
 
-	hex := r_h[0:2] + g_h[0:2] + b_h[0:2] + a_h[0:2]
+	hex := "#" + r_h[0:2] + g_h[0:2] + b_h[0:2] + a_h[0:2]
 
 	return hex
-}
+} // Returns a string representing a RGBA color in hexadecimal

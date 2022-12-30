@@ -1,7 +1,11 @@
 package agent
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"math/rand"
+	"os"
 	"sync"
 
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
@@ -16,12 +20,13 @@ type AgentWorker struct {
 }
 
 type AgentManager struct {
-	id            string
-	agts          []*AgentWorker
-	hobby         string
-	Srv           *Server
-	Cin           chan interface{}
-	C_findWorkers chan findWorkersResponse
+	id              string
+	agts            []*AgentWorker
+	hobby           string
+	Srv             *Server
+	bufferImgLayout []painting.PixelToPlace
+	Cin             chan interface{}
+	C_findWorkers   chan findWorkersResponse
 }
 
 func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker {
@@ -69,9 +74,11 @@ func NewAgentManager(idAgt string, hobbyAgt string, srv *Server) *AgentManager {
 func (am *AgentManager) Start() {
 	am.register()
 	am.updateWorkers()
+	am.convertImgToPixels(".\\usa", 0, 0)
+	am.sendPixelsToWorkers()
 }
 
-func (am *AgentManager) GetID() string {
+func (am *AgentManager) getID() string {
 	return am.id
 }
 
@@ -89,7 +96,7 @@ func (am *AgentManager) updateWorkers() {
 	req := findWorkersRequest{am.id, am.hobby}
 	(am.Srv).Cin <- req
 
-	fmt.Println("Voici ma liste de workers : ", am.agts)
+	fmt.Println("Voici ma liste initiale de workers : ", am.agts)
 
 	var wg sync.WaitGroup
 	var resp findWorkersResponse
@@ -112,6 +119,53 @@ func (am *AgentManager) updateWorkers() {
 
 	fmt.Println("Voici ma liste finale de workers : ", am.agts)
 
+}
+
+// Shall we specify the offset right now or shall we make another function which adds the offset?
+// Because at this point, the manager does not know the size of the image and where to place it
+func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offset int) {
+	f, err := os.Open(img_path)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanWords)
+
+	for scanner.Scan() {
+		str := scanner.Text()
+		if str != "!" {
+			tmpPixel := painting.NewPixelLocal(painting.StringToColor(str))
+			ptp := painting.NewPixelToPlaceLocal(tmpPixel, x_offset, y_offset)
+			am.bufferImgLayout = append(am.bufferImgLayout, ptp)
+			x_offset++
+		} else {
+			y_offset++
+		}
+	}
+}
+
+func (am *AgentManager) sendPixelsToWorkers() {
+	numWorkers := len(am.agts)
+
+	start := 0
+	end := len(am.bufferImgLayout) - 1
+	fmt.Println("end : ", end)
+
+	intervalSize := (end + 1) / numWorkers
+	remainder := intervalSize - (end + 1)
+
+	fmt.Println("intervaleSize : ", intervalSize)
+
+	for i := 0; i < numWorkers; i++ {
+		low := start + i*intervalSize
+		high := low + intervalSize - 1
+
+		fmt.Printf("interval: [%d, %d]\n", low, high)
+	}
 }
 
 // ============================ Utilities ============================
@@ -143,7 +197,16 @@ func getManagerIndex(s []*AgentManager, id string) int {
 	return -1
 }
 
-func remove(s []*AgentWorker, i int) []*AgentWorker {
+func remove[T comparable](s []T, i int) []T {
 	s[i] = s[len(s)-1]
 	return s[:len(s)-1]
+}
+
+func MakeRandomSliceOfHobbies(hobbies []string) (result []string) {
+	result = make([]string, 0)
+	for i := 0; i < 1; i++ {
+		k := rand.Intn(len(hobbies))
+		result = append(result, hobbies[k])
+	}
+	return
 }

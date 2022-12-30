@@ -36,6 +36,18 @@ var colorPalette = [...]Color{
 	{255, 255, 255, 255},
 }
 
+func NewPixel() *Pixel {
+	return &Pixel{
+		color: Color{255, 255, 255, 255},
+	}
+}
+
+func NewPixelLocal(c Color) Pixel {
+	return Pixel{
+		color: Color{c.R, c.G, c.G, c.A},
+	}
+}
+
 func (p *Pixel) GetColor() Color {
 	return p.color
 }
@@ -44,8 +56,10 @@ func (p *Pixel) SetColor(color Color) {
 	p.color = color
 }
 
-func NewPixel() *Pixel {
-	return &Pixel{
-		color: Color{255, 255, 255, 255},
+func NewPixelToPlaceLocal(p Pixel, x int, y int) PixelToPlace {
+	return PixelToPlace{
+		x:     x,
+		y:     y,
+		pixel: p,
 	}
 }

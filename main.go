@@ -16,7 +16,7 @@ func main() {
 	myServer := agent.NewServer("TEST", "127.0.0.1:8080")
 	go myServer.Start()
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(time.Second)
 
 	var hobbies []string = []string{"football", "game", "paint", "horror", "manga", "history"}
 	var agts_m []*agent.AgentManager
@@ -25,17 +25,21 @@ func main() {
 	id_m := 0
 	id_w := 0
 
-	for i := 0; i < 10; i++ {
-		if rand.Intn(2) == 0 {
+	for i := 0; i < 30; i++ {
+		if rand.Intn(2) == -1 {
 			id := "agt_m" + strconv.Itoa(id_m)
 			agts_m = append(agts_m, agent.NewAgentManager(id, hobbies[rand.Intn(6)], myServer))
 			id_m++
 		} else {
 			id := "agt_w" + strconv.Itoa(id_w)
-			agts_w = append(agts_w, agent.NewAgentWorker(id, hobbies, myServer))
+			agts_w = append(agts_w, agent.NewAgentWorker(id, agent.MakeRandomSliceOfHobbies(hobbies), myServer))
 			id_w++
 		}
 	}
+
+	id := "agt_m" + strconv.Itoa(id_m)
+	agts_m = append(agts_m, agent.NewAgentManager(id, hobbies[rand.Intn(6)], myServer))
+	id_m++
 
 	for _, v := range agts_w {
 		v.Start()
