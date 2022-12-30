@@ -153,18 +153,25 @@ func (am *AgentManager) sendPixelsToWorkers() {
 
 	start := 0
 	end := len(am.bufferImgLayout) - 1
-	fmt.Println("end : ", end)
 
 	intervalSize := (end + 1) / numWorkers
-	remainder := intervalSize - (end + 1)
+	remainder := (end + 1) % numWorkers
 
-	fmt.Println("intervaleSize : ", intervalSize)
-
+	var plusOne int
 	for i := 0; i < numWorkers; i++ {
+		if remainder != 0 {
+			remainder--
+			plusOne = 1
+		}
+
 		low := start + i*intervalSize
-		high := low + intervalSize - 1
+		high := low + intervalSize - 1 + plusOne
 
 		fmt.Printf("interval: [%d, %d]\n", low, high)
+		fmt.Println("----- interval length: ", (high+1)-low)
+
+		start += plusOne
+		plusOne = 0
 	}
 }
 

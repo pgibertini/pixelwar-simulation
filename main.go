@@ -25,7 +25,7 @@ func main() {
 	id_m := 0
 	id_w := 0
 
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 100; i++ {
 		if rand.Intn(2) == -1 {
 			id := "agt_m" + strconv.Itoa(id_m)
 			agts_m = append(agts_m, agent.NewAgentManager(id, hobbies[rand.Intn(6)], myServer))
