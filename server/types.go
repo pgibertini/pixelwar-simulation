@@ -15,11 +15,14 @@ type Server struct {
 type Place struct {
 	id     string
 	canvas *painting.Canvas
+	// TODO: add map of ID/timestamp to know when the last pixel has been placed by an agent
+	// TODO: add an attribute defining the cooldown between the placement of 2 pixels
 }
 
 type newPlaceRequest struct {
 	Width  int `json:"width"`
 	Height int `json:"height"`
+	// TODO: add a parameter defining the cooldown between the placement of 2 pixels
 }
 
 type newPlaceResponse struct {

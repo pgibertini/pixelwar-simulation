@@ -11,7 +11,7 @@ func NewServer(id string, addr string) *Server {
 	return &Server{
 		identifier: id,
 		address:    addr,
-		places:     make(map[string]*Place),
+		places:     make(map[string]*Place), // TODO: maybe refactor to only have 1 place. This will affect paint_pixel and get_pixel request as the id of the place will no longer be necessary
 	}
 }
 
@@ -31,6 +31,7 @@ func (srv *Server) Start() {
 	mux.HandleFunc("/new_place", srv.doNewPlace)
 	mux.HandleFunc("/paint_pixel", srv.doPaintPixel)
 	mux.HandleFunc("/get_pixel", srv.doGetPixel)
+	// TODO: add a get canva request that return the whole grid
 
 	// Création d'un serveur web
 	s := &http.Server{
