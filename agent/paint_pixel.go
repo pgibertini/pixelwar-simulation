@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func (*Server) decodePaintPixelRequest(r *http.Request) (req paintPixelRequest, err error) {
@@ -31,7 +32,18 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: check if the cooldown has been respected
+	userLastAction, exists := srv.places[req.PlaceID].lastAction[req.UserID]
+	// Regarde si l'utilisateur est déjà dans le map
+	if exists {
+		// Vérifie que le cooldown a été respecté
+		if time.Now().Before(userLastAction.Add(srv.places[req.PlaceID].cooldown)) {
+			w.WriteHeader(http.StatusTooEarly)
+			fmt.Fprint(w, "Trop tôt")
+			return
+		}
+	}
+	// Update ou rajoute l'user dans le map
+	srv.places[req.PlaceID].lastAction[req.UserID] = time.Now()
 
 	// traitement de la requête
 	rgb, err := req.Color.ToRGB()

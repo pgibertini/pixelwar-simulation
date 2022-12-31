@@ -3,6 +3,7 @@ package agent
 import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"sync"
+	"time"
 )
 
 type Server struct {
@@ -13,16 +14,16 @@ type Server struct {
 }
 
 type Place struct {
-	id     string
-	canvas *painting.Canvas
-	// TODO: add map of ID/timestamp to know when the last pixel has been placed by an agent
-	// TODO: add an attribute defining the cooldown between the placement of 2 pixels
+	id         string
+	canvas     *painting.Canvas
+	lastAction map[string]time.Time
+	cooldown   time.Duration
 }
 
 type newPlaceRequest struct {
-	Width  int `json:"width"`
-	Height int `json:"height"`
-	// TODO: add a parameter defining the cooldown between the placement of 2 pixels
+	Width    int           `json:"width"`
+	Height   int           `json:"height"`
+	Cooldown time.Duration `json:"cooldown"`
 }
 
 type newPlaceResponse struct {
@@ -34,6 +35,7 @@ type paintPixelRequest struct {
 	Y       int               `json:"y"`
 	Color   painting.HexColor `json:"color"`
 	PlaceID string            `json:"place-id"`
+	UserID  string            `json:"user-id"`
 }
 
 type getPixelRequest struct {
