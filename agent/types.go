@@ -47,3 +47,13 @@ type getPixelRequest struct {
 type getPixelResponse struct {
 	Color painting.HexColor `json:"color"`
 }
+
+type getCanvasRequest struct {
+	PlaceID string `json:"place-id"`
+}
+
+type getCanvasResponse struct {
+	Height int                   `json:"height"`
+	Width  int                   `json:"width"`
+	Grid   [][]painting.HexColor `json:"grid"`
+}

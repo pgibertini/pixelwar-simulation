@@ -31,7 +31,7 @@ func (srv *Server) Start() {
 	mux.HandleFunc("/new_place", srv.doNewPlace)
 	mux.HandleFunc("/paint_pixel", srv.doPaintPixel)
 	mux.HandleFunc("/get_pixel", srv.doGetPixel)
-	// TODO: add a get canva request that return the whole grid
+	mux.HandleFunc("/get_canvas", srv.doGetCanvas)
 
 	// Création d'un serveur web
 	s := &http.Server{
