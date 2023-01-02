@@ -10,44 +10,31 @@ const canvasTemplate = `
 <html>
   <head>
     <title>Canvas</title>
+
+	<style>
+	  body { background:#eee; margin:1em; text-align:center; }
+
+      canvas {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+		border:1px solid #ccc
+      }
+    </style>
+
   </head>
   <body>
     <canvas id="canvas" width="{{.Width}}" height="{{.Height}}"></canvas>
     <script>
 		const canvasElement = document.getElementById('canvas');
-		const viewportWidth = window.innerWidth;
-		const viewportHeight = window.innerHeight;
-		
-		const canvasWidth = canvasElement.width;
-		const canvasHeight = canvasElement.height;
-		
-		// Calculate the size of the square
-		let squareSize;
-		if (canvasWidth > canvasHeight) {
-		  squareSize = viewportHeight;
-		} else {
-		  squareSize = viewportWidth;
-		}
-		squareSize = 1000;
-		
-		// Set the width and height of the canvas to the size of the square
-		canvasElement.setAttribute('width', squareSize);
-		canvasElement.setAttribute('height', squareSize);
-
-		// Update the displayed image on the canvas
-		const ctx = canvasElement.getContext('2d');
-		for (let y = 0; y < canvasElement.height; y++) {
-		  for (let x = 0; x < canvasElement.width; x++) {
-			ctx.fillStyle = '#0000FF';
-			ctx.fillRect(x, y, 1, 1);
-		  }
-		}
 
       setInterval(function() {
         // Send a request to the server to get the current state of the canvas
         fetch('/get_canvas', {
           method: 'POST',
-          body: JSON.stringify({placeID: '{{.PlaceID}}'}),
+          body: JSON.stringify({'place-id': '{{.PlaceID}}'}),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -60,12 +47,13 @@ const canvasTemplate = `
             for (let y = 0; y < canvas.height; y++) {
               for (let x = 0; x < canvas.width; x++) {
 				const canvasElement = document.getElementById('canvas');
-                ctx.fillStyle = '#000000';
+                ctx.fillStyle = canvas.grid[x][y];
                 ctx.fillRect(x, y, 1, 1);
               }
             }
           });
       }, 1000); // Update the canvas every second
+
     </script>
   </body>
 </html>

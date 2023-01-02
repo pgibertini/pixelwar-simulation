@@ -26,9 +26,15 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 
 	// décodage de la requête
 	req, err := srv.decodeGetCanvasRequest(r)
-	if err != nil || req.PlaceID == "" {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err.Error())
+		return
+	}
+
+	if req.PlaceID == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("incorrect place ID in getCanvasRequest")
 		return
 	}
 
