@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"net/http"
+	"time"
 )
 
 func (*Server) decodeNewPlaceRequest(r *http.Request) (req newPlaceRequest, err error) {
@@ -35,8 +36,10 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	// traitement de la requête
 	id := fmt.Sprintf("place%d", len(srv.places)+1)
 	place := Place{
-		id:     id,
-		canvas: painting.NewCanvas(req.Height, req.Width),
+		id:         id,
+		canvas:     painting.NewCanvas(req.Height, req.Width),
+		lastAction: make(map[string]time.Time),
+		cooldown:   req.Cooldown * time.Second,
 	}
 	srv.places[id] = &place
 
