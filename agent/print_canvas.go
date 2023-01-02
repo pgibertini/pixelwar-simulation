@@ -14,6 +14,35 @@ const canvasTemplate = `
   <body>
     <canvas id="canvas" width="{{.Width}}" height="{{.Height}}"></canvas>
     <script>
+		const canvasElement = document.getElementById('canvas');
+		const viewportWidth = window.innerWidth;
+		const viewportHeight = window.innerHeight;
+		
+		const canvasWidth = canvasElement.width;
+		const canvasHeight = canvasElement.height;
+		
+		// Calculate the size of the square
+		let squareSize;
+		if (canvasWidth > canvasHeight) {
+		  squareSize = viewportHeight;
+		} else {
+		  squareSize = viewportWidth;
+		}
+		squareSize = 1000;
+		
+		// Set the width and height of the canvas to the size of the square
+		canvasElement.setAttribute('width', squareSize);
+		canvasElement.setAttribute('height', squareSize);
+
+		// Update the displayed image on the canvas
+		const ctx = canvasElement.getContext('2d');
+		for (let y = 0; y < canvasElement.height; y++) {
+		  for (let x = 0; x < canvasElement.width; x++) {
+			ctx.fillStyle = '#0000FF';
+			ctx.fillRect(x, y, 1, 1);
+		  }
+		}
+
       setInterval(function() {
         // Send a request to the server to get the current state of the canvas
         fetch('/get_canvas', {
@@ -25,11 +54,13 @@ const canvasTemplate = `
         })
           .then(response => response.json())
           .then(canvas => {
+			console.log('canvas.grid:', canvas.grid);
             // Update the displayed image on the canvas
-            const ctx = canvas.getContext('2d');
+            const ctx = canvasElement.getContext('2d');
             for (let y = 0; y < canvas.height; y++) {
               for (let x = 0; x < canvas.width; x++) {
-                ctx.fillStyle = canvas.grid[y][x];
+				const canvasElement = document.getElementById('canvas');
+                ctx.fillStyle = '#000000';
                 ctx.fillRect(x, y, 1, 1);
               }
             }
