@@ -7,6 +7,7 @@ import (
 )
 
 const canvasTemplate = `
+<!DOCTYPE html>
 <html>
   <head>
     <title>Canvas</title>
@@ -41,7 +42,7 @@ const canvasTemplate = `
         })
           .then(response => response.json())
           .then(canvas => {
-			console.log('canvas.grid:', canvas.grid);
+			console.log('grid updated');
             // Update the displayed image on the canvas
             const ctx = canvasElement.getContext('2d');
             for (let y = 0; y < canvas.height; y++) {

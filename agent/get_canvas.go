@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"net/http"
 )
 
@@ -40,17 +39,9 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 
 	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
 	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
+	grid := &srv.places[req.PlaceID].canvas.Grid
 
-	// Créé un tableau avec l'hexa de chaque pixel
-	grid := make([][]painting.HexColor, gridHeight)
-	for i := 0; i < gridHeight; i++ {
-		grid[i] = make([]painting.HexColor, gridWidth)
-		for j := 0; j < gridWidth; j++ {
-			grid[i][j] = srv.places[req.PlaceID].canvas.Grid[i][j].GetColor().ToHex()
-		}
-	}
-
-	resp := getCanvasResponse{gridHeight, gridWidth, grid}
+	resp := getCanvasResponse{gridHeight, gridWidth, *grid}
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

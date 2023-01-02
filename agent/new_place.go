@@ -37,7 +37,7 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	id := fmt.Sprintf("place%d", len(srv.places)+1)
 	place := Place{
 		id:         id,
-		canvas:     painting.NewCanvas(req.Height, req.Width),
+		canvas:     painting.NewCanvasHex(req.Height, req.Width),
 		lastAction: make(map[string]time.Time),
 		cooldown:   req.Cooldown * time.Second,
 	}
