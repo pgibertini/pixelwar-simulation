@@ -47,8 +47,15 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check if the user-id is not empty
+	if req.UserID == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, fmt.Sprintf("empty user-id"))
+		return
+	}
+
 	userLastAction, exists := srv.places[req.PlaceID].lastAction[req.UserID]
-	// Regarde si l'utilisateur est déjà dans le map
+	// check if the user is already in the map of cooldown
 	if exists {
 		// Vérifie que le cooldown a été respecté
 		if wait := userLastAction.Add(srv.places[req.PlaceID].cooldown).Sub(time.Now()).Seconds(); wait > 0 {
