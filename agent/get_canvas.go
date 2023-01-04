@@ -31,9 +31,11 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.PlaceID == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Println("incorrect place ID in getCanvasRequest")
+	// check if the place-id exists
+	if _, exists := srv.places[req.PlaceID]; exists {
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "invalid place-id")
 		return
 	}
 

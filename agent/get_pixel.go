@@ -31,6 +31,14 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check if the place-id exists
+	if _, exists := srv.places[req.PlaceID]; exists {
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "invalid place-id")
+		return
+	}
+
 	// traitement de la requête
 	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y]
 	//fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
