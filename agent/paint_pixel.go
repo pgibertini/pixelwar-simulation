@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (*Server) decodePaintPixelRequest(r *http.Request) (req paintPixelRequest, err error) {
+func (*Server) decodePaintPixelRequest(r *http.Request) (req PaintPixelRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)

@@ -20,17 +20,17 @@ type Place struct {
 	cooldown   time.Duration
 }
 
-type newPlaceRequest struct {
+type NewPlaceRequest struct {
 	Width    int           `json:"width"`
 	Height   int           `json:"height"`
 	Cooldown time.Duration `json:"cooldown"`
 }
 
-type newPlaceResponse struct {
+type NewPlaceResponse struct {
 	PlaceID string `json:"place-id"`
 }
 
-type paintPixelRequest struct {
+type PaintPixelRequest struct {
 	X       int               `json:"x"`
 	Y       int               `json:"y"`
 	Color   painting.HexColor `json:"color"`
@@ -38,21 +38,21 @@ type paintPixelRequest struct {
 	UserID  string            `json:"user-id"`
 }
 
-type getPixelRequest struct {
+type GetPixelRequest struct {
 	X       int    `json:"x"`
 	Y       int    `json:"y"`
 	PlaceID string `json:"place-id"`
 }
 
-type getPixelResponse struct {
+type GetPixelResponse struct {
 	Color painting.HexColor `json:"color"`
 }
 
-type getCanvasRequest struct {
+type GetCanvasRequest struct {
 	PlaceID string `json:"place-id"`
 }
 
-type getCanvasResponse struct {
+type GetCanvasResponse struct {
 	Height int                   `json:"height"`
 	Width  int                   `json:"width"`
 	Grid   [][]painting.HexColor `json:"grid"`

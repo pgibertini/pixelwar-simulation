@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (*Server) decodeGetPixelRequest(r *http.Request) (req getPixelRequest, err error) {
+func (*Server) decodeGetPixelRequest(r *http.Request) (req GetPixelRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -50,7 +50,7 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y]
 	//fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
 
-	resp := getPixelResponse{Color: color}
+	resp := GetPixelResponse{Color: color}
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

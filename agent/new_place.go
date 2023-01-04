@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (*Server) decodeNewPlaceRequest(r *http.Request) (req newPlaceRequest, err error) {
+func (*Server) decodeNewPlaceRequest(r *http.Request) (req NewPlaceRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -43,7 +43,7 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	}
 	srv.places[id] = &place
 
-	resp := newPlaceResponse{PlaceID: id}
+	resp := NewPlaceResponse{PlaceID: id}
 	w.WriteHeader(http.StatusCreated)
 
 	serial, _ := json.Marshal(resp)
