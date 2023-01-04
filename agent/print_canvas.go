@@ -78,7 +78,7 @@ func (srv *Server) doCanvas(w http.ResponseWriter, r *http.Request) {
 	place, ok := srv.places[placeID]
 	srv.Unlock()
 	if !ok {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "invalid placeID")
 		return
 	}

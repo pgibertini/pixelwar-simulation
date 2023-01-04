@@ -34,7 +34,7 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	// check if the place-id exists
 	if _, exists := srv.places[req.PlaceID]; exists {
 	} else {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "invalid place-id")
 		return
 	}
