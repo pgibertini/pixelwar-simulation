@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"net/http"
 )
 
@@ -26,25 +25,23 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 
 	// décodage de la requête
 	req, err := srv.decodeGetCanvasRequest(r)
-	if err != nil || req.PlaceID == "" {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err.Error())
 		return
 	}
 
-	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
-	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
-
-	// Créé un tableau avec l'hexa de chaque pixel
-	grid := make([][]painting.HexColor, gridHeight)
-	for i := 0; i < gridHeight; i++ {
-		grid[i] = make([]painting.HexColor, gridWidth)
-		for j := 0; j < gridWidth; j++ {
-			grid[i][j] = srv.places[req.PlaceID].canvas.Grid[i][j].GetColor().ToHex()
-		}
+	if req.PlaceID == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("incorrect place ID in getCanvasRequest")
+		return
 	}
 
-	resp := getCanvasResponse{gridHeight, gridWidth, grid}
+	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
+	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
+	grid := &srv.places[req.PlaceID].canvas.Grid
+
+	resp := getCanvasResponse{gridHeight, gridWidth, *grid}
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

@@ -46,8 +46,8 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	srv.places[req.PlaceID].lastAction[req.UserID] = time.Now()
 
 	// traitement de la requête
-	rgb, err := req.Color.ToRGB()
-	srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].SetColor(rgb)
+	//rgb, err := req.Color.ToRGB()
+	srv.places[req.PlaceID].canvas.Grid[req.X][req.Y] = req.Color
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -32,8 +32,8 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
-	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor().ToHex()
-	fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
+	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y]
+	//fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
 
 	resp := getPixelResponse{Color: color}
 	w.WriteHeader(http.StatusOK)

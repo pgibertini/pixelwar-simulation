@@ -15,3 +15,9 @@ type Canvas struct {
 	width  int
 	Grid   [][]*Pixel
 }
+
+type CanvasHex struct {
+	height int
+	width  int
+	Grid   [][]HexColor
+}

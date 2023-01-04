@@ -15,7 +15,7 @@ type Server struct {
 
 type Place struct {
 	id         string
-	canvas     *painting.Canvas
+	canvas     *painting.CanvasHex
 	lastAction map[string]time.Time
 	cooldown   time.Duration
 }
