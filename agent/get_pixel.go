@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -47,6 +48,10 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
+	if debug {
+		log.Printf("get_pixel: coord=(%d, %d)\n", req.X, req.Y)
+	}
+
 	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y]
 	//fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
+	"log"
 	"net/http"
 	"time"
 )
@@ -45,6 +46,10 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 
 	resp := NewPlaceResponse{PlaceID: id}
 	w.WriteHeader(http.StatusCreated)
+
+	if debug {
+		log.Printf("new_place: place-id=%s\n", id)
+	}
 
 	serial, _ := json.Marshal(resp)
 	w.Write(serial)

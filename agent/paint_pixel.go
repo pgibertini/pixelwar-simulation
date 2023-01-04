@@ -75,13 +75,13 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 
 	// traitement de la requête
 	if debug {
-		log.Println("Received paint_pixel request")
+		log.Printf("paint_pixel: user-id=%s ; coord=(%d, %d) ; color=%s\n", req.UserID, req.X, req.Y, req.Color)
 	}
 
 	// Update ou rajoute l'user dans le map
 	srv.places[req.PlaceID].lastAction[req.UserID] = time.Now()
 
-	//rgb, err := req.Color.ToRGB()
+	// rgb, err := req.Color.ToRGB()
 	srv.places[req.PlaceID].canvas.Grid[req.X][req.Y] = req.Color
 
 	w.WriteHeader(http.StatusOK)

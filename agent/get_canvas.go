@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -42,6 +43,10 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
 	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
 	grid := &srv.places[req.PlaceID].canvas.Grid
+
+	if debug {
+		log.Printf("get_canvas: place-id=%s\n", req.PlaceID)
+	}
 
 	resp := GetCanvasResponse{gridHeight, gridWidth, *grid}
 	w.WriteHeader(http.StatusOK)
