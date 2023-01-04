@@ -1,11 +1,18 @@
 package agent
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
+
+var debug bool
+
+func init() {
+	flag.BoolVar(&debug, "debug", false, "enable debug mode")
+}
 
 func NewServer(id string, addr string) *Server {
 	return &Server{
