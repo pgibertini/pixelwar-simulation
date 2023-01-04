@@ -75,7 +75,7 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 
 	// traitement de la requête
 	if debug {
-		log.Printf("paint_pixel: user-id=%s ; coord=(%d, %d) ; color=%s\n", req.UserID, req.X, req.Y, req.Color)
+		log.Printf("paint_pixel: place-id=%s ; user-id=%s ; coord=(%d, %d) ; color=%s\n", req.PlaceID, req.UserID, req.X, req.Y, req.Color)
 	}
 
 	// Update ou rajoute l'user dans le map
