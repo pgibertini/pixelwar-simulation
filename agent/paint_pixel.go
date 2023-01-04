@@ -68,7 +68,7 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	// Check if the color is valid
 	if !req.Color.IsValid() {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Incorrect color")
+		fmt.Fprint(w, "invalid color")
 		return
 	}
 
