@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -73,6 +74,9 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
+	if debug {
+		log.Println("Received paint_pixel request")
+	}
 
 	// Update ou rajoute l'user dans le map
 	srv.places[req.PlaceID].lastAction[req.UserID] = time.Now()
