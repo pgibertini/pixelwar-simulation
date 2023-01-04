@@ -2,6 +2,7 @@ package painting
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 )
 
@@ -11,6 +12,11 @@ func (h HexColor) ToRGB() (Color, error) {
 
 func (c Color) ToHex() HexColor {
 	return RGB2Hex(c)
+}
+
+func (h HexColor) IsValid() bool {
+	hexColorRegexp := regexp.MustCompile("#[0-9a-fA-F]{6}")
+	return hexColorRegexp.MatchString(string(h))
 }
 
 func Hex2RGB(hex HexColor) (rgb Color, err error) {

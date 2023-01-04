@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func (*Server) decodeGetCanvasRequest(r *http.Request) (req getCanvasRequest, err error) {
+func (*Server) decodeGetCanvasRequest(r *http.Request) (req GetCanvasRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -31,9 +32,11 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.PlaceID == "" {
+	// check if the place-id exists
+	if _, exists := srv.places[req.PlaceID]; exists {
+	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Println("incorrect place ID in getCanvasRequest")
+		fmt.Fprint(w, "invalid place-id")
 		return
 	}
 
@@ -41,7 +44,11 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
 	grid := &srv.places[req.PlaceID].canvas.Grid
 
-	resp := getCanvasResponse{gridHeight, gridWidth, *grid}
+	if debug {
+		log.Printf("get_canvas: place-id=%s\n", req.PlaceID)
+	}
+
+	resp := GetCanvasResponse{gridHeight, gridWidth, *grid}
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

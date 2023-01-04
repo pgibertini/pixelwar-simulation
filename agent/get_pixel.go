@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func (*Server) decodeGetPixelRequest(r *http.Request) (req getPixelRequest, err error) {
+func (*Server) decodeGetPixelRequest(r *http.Request) (req GetPixelRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -31,11 +32,30 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check if the place-id exists
+	if _, exists := srv.places[req.PlaceID]; exists {
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid place-id")
+		return
+	}
+
+	// check if the coordinates are in the canvas
+	if req.X < 0 || req.X >= srv.places[req.PlaceID].canvas.GetWidth() || req.Y < 0 || req.Y >= srv.places[req.PlaceID].canvas.GetHeight() {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid coordinates")
+		return
+	}
+
 	// traitement de la requête
+	if debug {
+		log.Printf("get_pixel: coord=(%d, %d)\n", req.X, req.Y)
+	}
+
 	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y]
 	//fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
 
-	resp := getPixelResponse{Color: color}
+	resp := GetPixelResponse{Color: color}
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

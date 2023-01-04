@@ -1,17 +1,25 @@
 package agent
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
 
+var debug bool
+
+func init() {
+	flag.BoolVar(&debug, "debug", true, "enable debug mode")
+	// TODO: fix to have value passed by a flag
+}
+
 func NewServer(id string, addr string) *Server {
 	return &Server{
 		identifier: id,
 		address:    addr,
-		places:     make(map[string]*Place), // TODO: maybe refactor to only have 1 place. This will affect paint_pixel and get_pixel request as the id of the place will no longer be necessary
+		places:     make(map[string]*Place),
 	}
 }
 
