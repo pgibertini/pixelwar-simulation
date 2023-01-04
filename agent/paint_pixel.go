@@ -40,6 +40,13 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check if the coordinates are in the canvas
+	if req.X < 0 || req.X >= srv.places[req.PlaceID].canvas.GetWidth() || req.Y < 0 || req.Y >= srv.places[req.PlaceID].canvas.GetHeight() {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid coordinates")
+		return
+	}
+
 	userLastAction, exists := srv.places[req.PlaceID].lastAction[req.UserID]
 	// Regarde si l'utilisateur est déjà dans le map
 	if exists {

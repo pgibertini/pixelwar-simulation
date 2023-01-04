@@ -39,6 +39,13 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check if the coordinates are in the canvas
+	if req.X < 0 || req.X >= srv.places[req.PlaceID].canvas.GetWidth() || req.Y < 0 || req.Y >= srv.places[req.PlaceID].canvas.GetHeight() {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid coordinates")
+		return
+	}
+
 	// traitement de la requête
 	color := srv.places[req.PlaceID].canvas.Grid[req.X][req.Y]
 	//fmt.Println(srv.places[req.PlaceID].canvas.Grid[req.X][req.Y].GetColor())
