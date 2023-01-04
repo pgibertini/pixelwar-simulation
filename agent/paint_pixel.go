@@ -44,9 +44,9 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	// Regarde si l'utilisateur est déjà dans le map
 	if exists {
 		// Vérifie que le cooldown a été respecté
-		if time.Now().Before(userLastAction.Add(srv.places[req.PlaceID].cooldown)) {
+		if wait := userLastAction.Add(srv.places[req.PlaceID].cooldown).Sub(time.Now()).Seconds(); wait > 0 {
 			w.WriteHeader(http.StatusTooEarly)
-			fmt.Fprint(w, "Trop tôt")
+			fmt.Fprint(w, fmt.Sprintf("Please wait %f seconds", wait))
 			return
 		}
 	}
