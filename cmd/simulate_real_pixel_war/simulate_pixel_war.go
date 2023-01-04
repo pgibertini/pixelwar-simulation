@@ -16,7 +16,7 @@ import (
 func main() {
 	// Open the CSV file
 	// Get the dataset at https://www.reddit.com/r/place/comments/txvk2d/rplace_datasets_april_fools_2022/
-	csvFile, err := os.Open("cmd/simulate_real_pixel_war/sorted_2022_place_canvas_history.csv")
+	csvFile, err := os.Open("cmd/simulate_real_pixel_war/place_history_sample.csv")
 	if err != nil {
 		fmt.Println(err)
 		return
