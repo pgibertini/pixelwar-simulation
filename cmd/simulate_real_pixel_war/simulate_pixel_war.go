@@ -6,7 +6,6 @@ import (
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -40,7 +39,7 @@ func main() {
 		)))
 
 	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return
