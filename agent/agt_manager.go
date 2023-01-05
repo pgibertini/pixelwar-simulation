@@ -173,5 +173,6 @@ func (am *AgentManager) DistributeWork() {
 	for i, agt := range am.agts {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cout <- request
+		// TODO : have the channel saved directly
 	}
 }

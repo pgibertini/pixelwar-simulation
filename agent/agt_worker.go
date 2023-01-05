@@ -7,7 +7,6 @@ import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
-	"time"
 )
 
 func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat, placeID string, url string) *AgentWorker {
@@ -48,7 +47,7 @@ func (aw *AgentWorker) Start() {
 				pixel := aw.tab[0]
 				aw.drawOnePixel(pixel)
 				aw.tab = aw.tab[1:]
-				time.Sleep(time.Second)
+				//time.Sleep(time.Second)
 			}
 			aw.mu.Unlock()
 		}

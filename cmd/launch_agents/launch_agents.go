@@ -12,7 +12,7 @@ func main() {
 	// PARAMETERS
 	url := "http://localhost:8080"
 	nWorkers := 100
-	size := 100
+	size := 1000
 
 	// create a new place
 	placeID := agt.CreateNewPlace(url, size, size)
@@ -22,7 +22,7 @@ func main() {
 	myChat := agt.NewChat()
 	go myChat.Start()
 
-	var hobbies = []string{"#FF0000", "#OOFFOO", "#0000FF"}
+	var hobbies = []string{"#FF0000", "#00FF00", "#0000FF"}
 	var managers []*agt.AgentManager
 	var workers []*agt.AgentWorker
 
@@ -53,6 +53,7 @@ func main() {
 				pixels = append(pixels, painting.HexPixel{X: i, Y: j, Color: painting.HexColor(m.GetHobby())})
 			}
 		}
+		painting.ShuffleHexPixels(pixels)
 		m.AddPixelsToBuffer(pixels)
 	}
 
