@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func NewChat(id string, addr string) *Chat {
+func NewChat() *Chat {
 	cin := make(chan (interface{}))
 	return &Chat{
 		Cin: cin,
