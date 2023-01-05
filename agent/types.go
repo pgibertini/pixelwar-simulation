@@ -3,6 +3,7 @@ package agent
 import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"sync"
+	"time"
 )
 
 type Server struct {
@@ -16,37 +17,48 @@ type Server struct {
 }
 
 type Place struct {
-	id     string
-	canvas *painting.Canvas
-	// TODO: add map of ID/timestamp to know when the last pixel has been placed by an agent
-	// TODO: add an attribute defining the cooldown between the placement of 2 pixels
+	id         string
+	canvas     *painting.CanvasHex
+	lastAction map[string]time.Time
+	cooldown   time.Duration
 }
 
-type newPlaceRequest struct {
-	Width  int `json:"width"`
-	Height int `json:"height"`
-	// TODO: add a parameter defining the cooldown between the placement of 2 pixels
+type NewPlaceRequest struct {
+	Width    int           `json:"width"`
+	Height   int           `json:"height"`
+	Cooldown time.Duration `json:"cooldown"`
 }
 
-type newPlaceResponse struct {
+type NewPlaceResponse struct {
 	PlaceID string `json:"place-id"`
 }
 
-type paintPixelRequest struct {
+type PaintPixelRequest struct {
 	X       int               `json:"x"`
 	Y       int               `json:"y"`
 	Color   painting.HexColor `json:"color"`
 	PlaceID string            `json:"place-id"`
+	UserID  string            `json:"user-id"`
 }
 
-type getPixelRequest struct {
+type GetPixelRequest struct {
 	X       int    `json:"x"`
 	Y       int    `json:"y"`
 	PlaceID string `json:"place-id"`
 }
 
-type getPixelResponse struct {
+type GetPixelResponse struct {
 	Color painting.HexColor `json:"color"`
+}
+
+type GetCanvasRequest struct {
+	PlaceID string `json:"place-id"`
+}
+
+type GetCanvasResponse struct {
+	Height int                   `json:"height"`
+	Width  int                   `json:"width"`
+	Grid   [][]painting.HexColor `json:"grid"`
 }
 
 type sendPixelsRequest struct {
@@ -61,5 +73,5 @@ type findWorkersRequest struct {
 
 type findWorkersResponse struct {
 	workers []*AgentWorker
-	places     map[string]*Place
+	places  map[string]*Place
 }

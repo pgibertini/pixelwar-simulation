@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 )
 

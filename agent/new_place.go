@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
+	"log"
 	"net/http"
+	"time"
 )
 
-func (*Server) decodeNewPlaceRequest(r *http.Request) (req newPlaceRequest, err error) {
+func (*Server) decodeNewPlaceRequest(r *http.Request) (req NewPlaceRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -35,13 +37,19 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	// traitement de la requête
 	id := fmt.Sprintf("place%d", len(srv.places)+1)
 	place := Place{
-		id:     id,
-		canvas: painting.NewCanvas(req.Height, req.Width),
+		id:         id,
+		canvas:     painting.NewCanvasHex(req.Height, req.Width),
+		lastAction: make(map[string]time.Time),
+		cooldown:   req.Cooldown * time.Second,
 	}
 	srv.places[id] = &place
 
-	resp := newPlaceResponse{PlaceID: id}
+	resp := NewPlaceResponse{PlaceID: id}
 	w.WriteHeader(http.StatusCreated)
+
+	if debug {
+		log.Printf("new_place: place-id=%s\n", id)
+	}
 
 	serial, _ := json.Marshal(resp)
 	w.Write(serial)

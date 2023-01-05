@@ -1,18 +1,26 @@
 package agent
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
 
+var debug bool
+
+func init() {
+	flag.BoolVar(&debug, "debug", true, "enable debug mode")
+	// TODO: fix to have value passed by a flag
+}
+
 func NewServer(id string, addr string) *Server {
 	cin := make(chan (interface{}))
 	return &Server{
 		identifier: id,
 		address:    addr,
-		places:     make(map[string]*Place), // TODO: maybe refactor to only have 1 place. This will affect paint_pixel and get_pixel request as the id of the place will no longer be necessary
+		places:     make(map[string]*Place),
 		Cin:        cin,
 	}
 }
@@ -33,7 +41,8 @@ func (srv *Server) Start() {
 	mux.HandleFunc("/new_place", srv.doNewPlace)
 	mux.HandleFunc("/paint_pixel", srv.doPaintPixel)
 	mux.HandleFunc("/get_pixel", srv.doGetPixel)
-	// TODO: add a get canva request that return the whole grid
+	mux.HandleFunc("/get_canvas", srv.doGetCanvas)
+	mux.HandleFunc("/canvas", srv.doCanvas)
 
 	// Création d'un serveur web
 	s := &http.Server{
@@ -64,7 +73,6 @@ func (srv *Server) Start() {
 
 	go log.Fatal(s.ListenAndServe())
 }
-
 
 func (srv *Server) registerManager(am *AgentManager) {
 	fmt.Printf("Registering a manager. ID = %s\n", am.id)
