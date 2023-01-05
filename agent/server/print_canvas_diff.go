@@ -34,7 +34,7 @@ const canvasTemplateDiff = `
       		// Send a request to the server to get the current state of the canvas
 			fetch('/get_canvas', {
 			  method: 'POST',
-			  body: JSON.stringify({'place-id': '{{.PlaceID}}'}),
+			  body: JSON.stringify({'place-id': '{{.PlaceID}}', 'reset-diff': true}),
 			  headers: {
 				'Content-Type': 'application/json',
 			  },
@@ -51,8 +51,8 @@ const canvasTemplateDiff = `
 				ctx.fillRect(x, y, 1, 1);
 			  }
 			}
-		  });
-
+		  })		  
+		  .then(() => {
       setInterval(function() {
         // Send a request to the server to get the current state of the canvas
         fetch('/get_diff', {
@@ -75,8 +75,9 @@ const canvasTemplateDiff = `
 		  return response;
     	});
       }, 30); // Update the canvas every second
+	});
 
-    </script>
+	</script>
   </body>
 </html>
 `

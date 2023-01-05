@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
 )
@@ -41,6 +42,7 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// traitement de la requête
 	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
 	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
 	grid := &srv.places[req.PlaceID].canvas.Grid
@@ -49,6 +51,12 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 		log.Printf("get_canvas: place-id=%s\n", req.PlaceID)
 	}
 
+	if req.ResetDiff {
+		srv.places[req.PlaceID].diff = make(map[int]painting.HexPixel)
+		log.Println("diff reset")
+	}
+
+	log.Println(req.ResetDiff)
 	resp := agt.GetCanvasResponse{Height: gridHeight, Width: gridWidth, Grid: *grid}
 	w.WriteHeader(http.StatusOK)
 

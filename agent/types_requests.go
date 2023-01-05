@@ -34,7 +34,8 @@ type GetPixelResponse struct {
 }
 
 type GetCanvasRequest struct {
-	PlaceID string `json:"place-id"`
+	PlaceID   string `json:"place-id"`
+	ResetDiff bool   `json:"reset-diff"`
 }
 
 type GetCanvasResponse struct {

@@ -11,7 +11,7 @@ import (
 var debug bool
 
 func init() {
-	flag.BoolVar(&debug, "debug", true, "enable debug mode")
+	flag.BoolVar(&debug, "debug", false, "enable debug mode")
 	// TODO: fix to have value passed by a flag
 }
 
