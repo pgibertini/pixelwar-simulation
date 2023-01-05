@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
 )
@@ -42,8 +43,18 @@ func (srv *Server) doGetDiff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	diff := srv.places[req.PlaceID].canvas.Diff(srv.places[req.PlaceID].lastCanvas)
-	*srv.places[req.PlaceID].lastCanvas = *srv.places[req.PlaceID].canvas
 
+	lastCanvas := painting.NewCanvasHex(
+		srv.places[req.PlaceID].canvas.GetHeight(),
+		srv.places[req.PlaceID].canvas.GetWidth(),
+	)
+
+	for i := range srv.places[req.PlaceID].canvas.Grid {
+		lastCanvas.Grid[i] = make([]painting.HexColor, srv.places[req.PlaceID].canvas.GetWidth())
+		copy(lastCanvas.Grid[i], srv.places[req.PlaceID].canvas.Grid[i])
+	}
+
+	srv.places[req.PlaceID].lastCanvas = lastCanvas
 	if debug {
 		log.Printf("get_diff: place-id=%s\n", req.PlaceID)
 	}
