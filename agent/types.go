@@ -1,4 +1,4 @@
-package server
+package agent
 
 import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
