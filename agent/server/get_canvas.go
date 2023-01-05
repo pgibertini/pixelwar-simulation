@@ -53,10 +53,8 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 
 	if req.ResetDiff {
 		srv.places[req.PlaceID].diff = make(map[int]painting.HexPixel)
-		log.Println("diff reset")
 	}
 
-	log.Println(req.ResetDiff)
 	resp := agt.GetCanvasResponse{Height: gridHeight, Width: gridWidth, Grid: *grid}
 	w.WriteHeader(http.StatusOK)
 
