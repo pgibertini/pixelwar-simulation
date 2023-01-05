@@ -16,6 +16,8 @@ type AgentWorker struct {
 	Hobbies []string
 	Cout    chan interface{}
 	Chat    *Chat
+	srvUrl  string
+	placeId string
 }
 
 type AgentManager struct {
@@ -26,4 +28,6 @@ type AgentManager struct {
 	bufferImgLayout []painting.PixelToPlace
 	Cin             chan interface{}
 	C_findWorkers   chan FindWorkersResponse
+	srvUrl          string
+	placeId         string
 }
