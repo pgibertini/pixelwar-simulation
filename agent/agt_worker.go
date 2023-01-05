@@ -10,13 +10,16 @@ import (
 	"time"
 )
 
-func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat) *AgentWorker {
+func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat, placeID string, url string) *AgentWorker {
 	channel := make(chan interface{})
 	return &AgentWorker{
 		id:      idAgt,
 		Hobbies: hobbiesAgt,
 		Cout:    channel,
-		Chat:    chat}
+		Chat:    chat,
+		placeId: placeID,
+		srvUrl:  url,
+	}
 }
 
 func (aw *AgentWorker) Start() {
@@ -28,8 +31,9 @@ func (aw *AgentWorker) Start() {
 			value := <-aw.Cout
 			switch value.(type) {
 			case sendPixelsRequest:
-				// TODO: add some sync to be sure that the tab isn't modified by different function at the same moment
+				aw.mu.Lock()
 				aw.tab = append(aw.tab, value.(sendPixelsRequest).pixels...)
+				aw.mu.Unlock()
 			default:
 				fmt.Println("Error: bad request")
 			}
@@ -39,13 +43,14 @@ func (aw *AgentWorker) Start() {
 	// place des pixels
 	go func() {
 		for {
-			// TODO: add some sync to be sure that the tab isn't modified by different function at the same moment
+			aw.mu.Lock()
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
 				aw.drawOnePixel(pixel)
 				aw.tab = aw.tab[1:]
 				time.Sleep(time.Second)
 			}
+			aw.mu.Unlock()
 		}
 	}()
 }

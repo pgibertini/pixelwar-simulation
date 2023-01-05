@@ -147,3 +147,31 @@ func (am *AgentManager) sendPixelsToWorkers() {
 func (am *AgentManager) AddPixelsToBuffer(p []painting.HexPixel) {
 	am.bufferImgLayout = append(am.bufferImgLayout, p...)
 }
+
+func (am *AgentManager) divideWork() [][]painting.HexPixel {
+	numWorkers := len(am.agts)
+	workPerWorker := len(am.bufferImgLayout) / numWorkers
+	remainder := len(am.bufferImgLayout) % numWorkers
+
+	workList := make([][]painting.HexPixel, numWorkers)
+	for i := 0; i < numWorkers; i++ {
+		startIndex := i * workPerWorker
+		endIndex := startIndex + workPerWorker
+
+		if i == numWorkers-1 {
+			endIndex += remainder
+		}
+
+		workList[i] = am.bufferImgLayout[startIndex:endIndex]
+	}
+
+	return workList
+}
+
+func (am *AgentManager) DistributeWork() {
+	workList := am.divideWork()
+	for i, agt := range am.agts {
+		request := sendPixelsRequest{workList[i], am.id}
+		agt.Cout <- request
+	}
+}

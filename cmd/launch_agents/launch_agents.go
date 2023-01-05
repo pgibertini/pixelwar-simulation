@@ -3,60 +3,63 @@ package main
 import (
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
-	"math/rand"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
+	"log"
 	"strconv"
-	"time"
 )
 
 func main() {
+	// PARAMETERS
+	url := "http://localhost:8080"
+	nWorkers := 100
+	size := 100
+
+	// create a new place
+	placeID := agt.CreateNewPlace(url, size, size)
+	log.Printf("Playing on %s", placeID)
+
 	// chat for agents discussion
 	myChat := agt.NewChat()
 	go myChat.Start()
 
-	rand.Seed(time.Now().UnixNano())
+	var hobbies = []string{"#FF0000", "#OOFFOO", "#0000FF"}
+	var managers []*agt.AgentManager
+	var workers []*agt.AgentWorker
 
-	time.Sleep(time.Second)
+	// initializing managers and workers
+	for i, h := range hobbies {
+		managers = append(managers, agt.NewAgentManager(strconv.Itoa(i), h, myChat, placeID, url))
 
-	var hobbies []string = []string{"football", "game", "paint", "horror", "manga", "history"}
-	var agts_m []*agt.AgentManager
-	var agts_w []*agt.AgentWorker
-
-	id_m := 0
-	id_w := 0
-
-	for i := 0; i < 100; i++ {
-		if rand.Intn(2) == -1 {
-			id := "agt_m" + strconv.Itoa(id_m)
-			agts_m = append(agts_m, agt.NewAgentManager(id, hobbies[rand.Intn(6)], myChat))
-			id_m++
-		} else {
-			id := "agt_w" + strconv.Itoa(id_w)
-			agts_w = append(agts_w, agt.NewAgentWorker(id, agt.MakeRandomSliceOfHobbies(hobbies), myChat))
-			id_w++
+		for j := 0; j < nWorkers; j++ {
+			workers = append(workers, agt.NewAgentWorker(h+strconv.Itoa(j), []string{h}, myChat, placeID, url))
 		}
 	}
 
-	id := "agt_m" + strconv.Itoa(id_m)
-	agts_m = append(agts_m, agt.NewAgentManager(id, hobbies[rand.Intn(6)], myChat))
-	id_m++
-
-	for _, v := range agts_w {
-		v.Start()
+	// starting the agents
+	for _, w := range workers {
+		w.Start()
 	}
 
-	for _, v := range agts_m {
-		v.Start()
+	for _, m := range managers {
+		m.Start()
+	}
+
+	// giving pixel to place
+	var pixels []painting.HexPixel
+	for _, m := range managers {
+		pixels = nil
+		for i := 0; i < size; i++ {
+			for j := 0; j < size; j++ {
+				pixels = append(pixels, painting.HexPixel{X: i, Y: j, Color: painting.HexColor(m.GetHobby())})
+			}
+		}
+		m.AddPixelsToBuffer(pixels)
+	}
+
+	// sending pixel to workers
+	for _, m := range managers {
+		m.DistributeWork()
 	}
 
 	fmt.Scanln()
-
-	man := myChat.GetManagers()
-	wor := myChat.GetWorkers()
-
-	for _, value := range man {
-		fmt.Println(*value)
-	}
-	for _, value := range wor {
-		fmt.Println(*value)
-	}
 }

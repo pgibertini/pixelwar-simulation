@@ -2,6 +2,7 @@ package agent
 
 import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
+	"sync"
 )
 
 type Chat struct {
@@ -18,6 +19,7 @@ type AgentWorker struct {
 	Chat    *Chat
 	srvUrl  string
 	placeId string
+	mu      sync.Mutex
 }
 
 type AgentManager struct {
