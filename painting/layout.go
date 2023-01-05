@@ -40,7 +40,7 @@ func GetLayoutFromPNG(path_original_file string, filename string, first_pixel_x 
 			f.WriteString(string(v2))
 			f.WriteString(" ")
 		}
-		f.WriteString("\n")
+		f.WriteString("!")
 	}
 	fmt.Println("The file was successfuly created. The path is:", path)
 
@@ -89,3 +89,15 @@ func rgbaToString(r uint32, g uint32, b uint32, a uint32) string {
 
 	return hex
 } // Returns a string representing a RGBA color in hexadecimal
+
+// Converts a string to a RGBA color
+func StringToColor(pixelColor string) Color {
+
+	r_c, _ := strconv.ParseUint(pixelColor[1:3], 16, 8)
+	g_c, _ := strconv.ParseUint(pixelColor[3:5], 16, 8)
+	b_c, _ := strconv.ParseUint(pixelColor[5:7], 16, 8)
+	a_c, _ := strconv.ParseUint(pixelColor[7:9], 16, 8)
+
+	return Color{uint8(r_c), uint8(g_c), uint8(b_c), uint8(a_c)}
+
+} // Returns a RGBA color

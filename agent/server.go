@@ -16,10 +16,12 @@ func init() {
 }
 
 func NewServer(id string, addr string) *Server {
+	cin := make(chan (interface{}))
 	return &Server{
 		identifier: id,
 		address:    addr,
 		places:     make(map[string]*Place),
+		Cin:        cin,
 	}
 }
 
@@ -51,5 +53,51 @@ func (srv *Server) Start() {
 		MaxHeaderBytes: 1 << 20}
 
 	log.Println("Listening on", srv.address)
+
+	go func() {
+		for {
+			value := <-srv.Cin
+			switch value.(type) {
+			case *AgentManager:
+				srv.registerManager(value.(*AgentManager))
+			case *AgentWorker:
+				srv.registerWorker(value.(*AgentWorker))
+			case findWorkersRequest:
+				srv.findWorkersRespond(value.(findWorkersRequest))
+				(srv.ams[getManagerIndex(srv.ams, (value.(findWorkersRequest)).Id_manager)]).C_findWorkers <- srv.findWorkersRespond(value.(findWorkersRequest))
+			default:
+				fmt.Println("Error: bad request")
+			}
+		}
+	}()
+
 	go log.Fatal(s.ListenAndServe())
+}
+
+func (srv *Server) registerManager(am *AgentManager) {
+	fmt.Printf("Registering a manager. ID = %s\n", am.id)
+	srv.ams = append(srv.ams, am)
+}
+
+func (srv *Server) registerWorker(aw *AgentWorker) {
+	fmt.Printf("Registering a worker. ID = %s\n", aw.id)
+	srv.aws = append(srv.aws, aw)
+}
+
+func (srv *Server) findWorkersRespond(req findWorkersRequest) findWorkersResponse {
+	var resp findWorkersResponse
+	for _, v := range srv.aws {
+		if containsHobby(v.hobbies, req.hobby) {
+			resp.workers = append(resp.workers, v)
+		}
+	}
+	return resp
+}
+
+func (srv *Server) GetManagers() []*AgentManager {
+	return srv.ams
+}
+
+func (srv *Server) GetWorkers() []*AgentWorker {
+	return srv.aws
 }

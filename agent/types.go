@@ -11,6 +11,9 @@ type Server struct {
 	identifier string
 	address    string
 	places     map[string]*Place
+	ams        []*AgentManager
+	aws        []*AgentWorker
+	Cin        chan interface{}
 }
 
 type Place struct {
@@ -56,4 +59,19 @@ type GetCanvasResponse struct {
 	Height int                   `json:"height"`
 	Width  int                   `json:"width"`
 	Grid   [][]painting.HexColor `json:"grid"`
+}
+
+type sendPixelsRequest struct {
+	pixels []painting.PixelToPlace
+	id_am  string
+}
+
+type findWorkersRequest struct {
+	Id_manager string
+	hobby      string
+}
+
+type findWorkersResponse struct {
+	workers []*AgentWorker
+	places  map[string]*Place
 }
