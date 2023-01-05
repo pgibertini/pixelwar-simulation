@@ -55,5 +55,5 @@ type FindWorkersRequest struct {
 
 type FindWorkersResponse struct {
 	Workers []*AgentWorker
-	places  map[string]*Place
+	//places  map[string]*Place
 }

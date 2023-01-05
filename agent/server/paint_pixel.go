@@ -35,7 +35,7 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the place-id exists
-	if _, exists := srv.Places[req.PlaceID]; exists {
+	if _, exists := srv.places[req.PlaceID]; exists {
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "invalid place-id")
@@ -43,7 +43,7 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the coordinates are in the canvas
-	if req.X < 0 || req.X >= srv.Places[req.PlaceID].Canvas.GetWidth() || req.Y < 0 || req.Y >= srv.Places[req.PlaceID].Canvas.GetHeight() {
+	if req.X < 0 || req.X >= srv.places[req.PlaceID].canvas.GetWidth() || req.Y < 0 || req.Y >= srv.places[req.PlaceID].canvas.GetHeight() {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "invalid coordinates")
 		return
@@ -56,11 +56,11 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userLastAction, exists := srv.Places[req.PlaceID].LastAction[req.UserID]
+	userLastAction, exists := srv.places[req.PlaceID].lastAction[req.UserID]
 	// check if the user is already in the map of cooldown
 	if exists {
 		// Vérifie que le cooldown a été respecté
-		if wait := userLastAction.Add(srv.Places[req.PlaceID].Cooldown).Sub(time.Now()).Seconds(); wait > 0 {
+		if wait := userLastAction.Add(srv.places[req.PlaceID].cooldown).Sub(time.Now()).Seconds(); wait > 0 {
 			w.WriteHeader(http.StatusTooEarly)
 			fmt.Fprint(w, fmt.Sprintf("Please wait %f seconds", wait))
 			return
@@ -80,10 +80,10 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update ou rajoute l'user dans le map
-	srv.Places[req.PlaceID].LastAction[req.UserID] = time.Now()
+	srv.places[req.PlaceID].lastAction[req.UserID] = time.Now()
 
 	// rgb, err := req.Color.ToRGB()
-	srv.Places[req.PlaceID].Canvas.Grid[req.X][req.Y] = req.Color
+	srv.places[req.PlaceID].canvas.Grid[req.X][req.Y] = req.Color
 
 	w.WriteHeader(http.StatusOK)
 }

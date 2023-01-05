@@ -10,7 +10,7 @@ const canvasTemplate = `
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Canvas</title>
+    <title>canvas</title>
 
 	<style>
 	  body { background:#eee; margin:1em; text-align:center; }
@@ -75,7 +75,7 @@ func (srv *Server) doCanvas(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve the canvas from the server's map of places
 	srv.Lock()
-	place, ok := srv.Places[placeID]
+	place, ok := srv.places[placeID]
 	srv.Unlock()
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
@@ -87,8 +87,8 @@ func (srv *Server) doCanvas(w http.ResponseWriter, r *http.Request) {
 	tpl := template.Must(template.New("canvas").Parse(canvasTemplate))
 	err := tpl.Execute(w, map[string]interface{}{
 		"PlaceID": placeID,
-		"Width":   place.Canvas.GetWidth(),
-		"Height":  place.Canvas.GetHeight(),
+		"Width":   place.canvas.GetWidth(),
+		"Height":  place.canvas.GetHeight(),
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

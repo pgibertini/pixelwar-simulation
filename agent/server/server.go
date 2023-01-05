@@ -3,7 +3,6 @@ package server
 import (
 	"flag"
 	"fmt"
-	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"log"
 	"net/http"
 	"time"
@@ -11,20 +10,16 @@ import (
 
 var debug bool
 
-type Server agt.Server
-
 func init() {
 	flag.BoolVar(&debug, "debug", true, "enable debug mode")
 	// TODO: fix to have value passed by a flag
 }
 
 func NewServer(id string, addr string) *Server {
-	cin := make(chan (interface{}))
 	return &Server{
-		Identifier: id,
-		Address:    addr,
-		Places:     make(map[string]*agt.Place),
-		Cin:        cin,
+		identifier: id,
+		address:    addr,
+		places:     make(map[string]*Place),
 	}
 }
 
@@ -49,13 +44,13 @@ func (srv *Server) Start() {
 
 	// Création d'un serveur web
 	s := &http.Server{
-		Addr:           srv.Address,
+		Addr:           srv.address,
 		Handler:        mux,
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20}
 
-	log.Println("Listening on", srv.Address)
+	log.Println("Listening on", srv.address)
 
 	go log.Fatal(s.ListenAndServe())
 }

@@ -36,14 +36,14 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
-	id := fmt.Sprintf("place%d", len(srv.Places)+1)
-	place := agt.Place{
-		Id:         id,
-		Canvas:     painting.NewCanvasHex(req.Height, req.Width),
-		LastAction: make(map[string]time.Time),
-		Cooldown:   req.Cooldown * time.Second,
+	id := fmt.Sprintf("place%d", len(srv.places)+1)
+	place := Place{
+		id:         id,
+		canvas:     painting.NewCanvasHex(req.Height, req.Width),
+		lastAction: make(map[string]time.Time),
+		cooldown:   req.Cooldown * time.Second,
 	}
-	srv.Places[id] = &place
+	srv.places[id] = &place
 
 	resp := agt.NewPlaceResponse{PlaceID: id}
 	w.WriteHeader(http.StatusCreated)
