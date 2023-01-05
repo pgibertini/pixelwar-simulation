@@ -5,13 +5,13 @@ import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 )
 
-func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker {
+func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat) *AgentWorker {
 	channel := make(chan interface{})
 	return &AgentWorker{
 		id:      idAgt,
 		Hobbies: hobbiesAgt,
 		Cout:    channel,
-		Srv:     srv}
+		Chat:    chat}
 }
 
 func (aw *AgentWorker) Start() {
@@ -43,5 +43,5 @@ func (aw *AgentWorker) drawOnePixel(pixel painting.Pixel) {
 }
 
 func (aw *AgentWorker) register() {
-	(aw.Srv).Cin <- aw
+	(aw.Chat).Cin <- aw
 }

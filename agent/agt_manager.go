@@ -9,13 +9,13 @@ import (
 	"sync"
 )
 
-func NewAgentManager(idAgt string, hobbyAgt string, srv *Server) *AgentManager {
+func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat) *AgentManager {
 	cin := make(chan interface{})
 	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
 		id:            idAgt,
 		hobby:         hobbyAgt,
-		Srv:           srv,
+		Chat:          chat,
 		Cin:           cin,
 		C_findWorkers: cout}
 }
@@ -32,7 +32,7 @@ func (am *AgentManager) GetID() string {
 }
 
 func (am *AgentManager) register() {
-	(am.Srv).Cin <- am
+	(am.Chat).Cin <- am
 }
 
 func (am *AgentManager) updateWorkers() {
@@ -43,7 +43,7 @@ func (am *AgentManager) updateWorkers() {
 		}
 	}
 	req := FindWorkersRequest{am.id, am.hobby}
-	(am.Srv).Cin <- req
+	(am.Chat).Cin <- req
 
 	fmt.Println("Voici ma liste initiale de workers : ", am.agts)
 
