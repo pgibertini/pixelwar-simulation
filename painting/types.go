@@ -29,7 +29,7 @@ type PixelToPlace struct {
 }
 
 type HexPixel struct {
-	X     int      `json:"-"`
-	Y     int      `json:"-"`
-	Color HexColor `json:"-"`
+	X     int      `json:"x"`
+	Y     int      `json:"y"`
+	Color HexColor `json:"c"`
 }

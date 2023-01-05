@@ -42,6 +42,7 @@ func (srv *Server) Start() {
 	mux.HandleFunc("/get_canvas", srv.doGetCanvas)
 	mux.HandleFunc("/canvas", srv.doCanvas)
 	mux.HandleFunc("/get_diff", srv.doGetDiff)
+	mux.HandleFunc("/canvas_diff", srv.doCanvasDiff)
 
 	// Création d'un serveur web
 	s := &http.Server{
