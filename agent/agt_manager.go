@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat) *AgentManager {
+func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat, placeID string, url string) *AgentManager {
 	cin := make(chan interface{})
 	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
@@ -17,18 +17,25 @@ func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat) *AgentManager {
 		hobby:         hobbyAgt,
 		Chat:          chat,
 		Cin:           cin,
-		C_findWorkers: cout}
+		C_findWorkers: cout,
+		placeId:       placeID,
+		srvUrl:        url,
+	}
 }
 
 func (am *AgentManager) Start() {
 	am.register()
 	am.updateWorkers()
-	am.convertImgToPixels("./usa", 0, 0)
-	am.sendPixelsToWorkers()
+	//am.convertImgToPixels("./usa", 0, 0)
+	//am.sendPixelsToWorkers()
 }
 
 func (am *AgentManager) GetID() string {
 	return am.id
+}
+
+func (am *AgentManager) GetHobby() string {
+	return am.hobby
 }
 
 func (am *AgentManager) register() {
@@ -135,4 +142,8 @@ func (am *AgentManager) sendPixelsToWorkers() {
 		request := sendPixelsRequest{pixelsToSend, am.id}
 		am.agts[i].Cout <- request
 	}
+}
+
+func (am *AgentManager) AddPixelsToBuffer(p []painting.HexPixel) {
+	am.bufferImgLayout = append(am.bufferImgLayout, p...)
 }
