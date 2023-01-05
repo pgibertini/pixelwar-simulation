@@ -28,6 +28,7 @@ func (aw *AgentWorker) Start() {
 			value := <-aw.Cout
 			switch value.(type) {
 			case sendPixelsRequest:
+				// TODO: add some sync to be sure that the tab isn't modified by different function at the same moment
 				aw.tab = append(aw.tab, value.(sendPixelsRequest).pixels...)
 			default:
 				fmt.Println("Error: bad request")
@@ -38,6 +39,7 @@ func (aw *AgentWorker) Start() {
 	// place des pixels
 	go func() {
 		for {
+			// TODO: add some sync to be sure that the tab isn't modified by different function at the same moment
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
 				aw.drawOnePixel(pixel)
