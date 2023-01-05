@@ -31,6 +31,28 @@ const canvasTemplateDiff = `
     <script>
 		const canvasElement = document.getElementById('canvas');
 
+      		// Send a request to the server to get the current state of the canvas
+			fetch('/get_canvas', {
+			  method: 'POST',
+			  body: JSON.stringify({'place-id': '{{.PlaceID}}'}),
+			  headers: {
+				'Content-Type': 'application/json',
+			  },
+			})
+		  .then(response => response.json())
+		  .then(canvas => {
+			console.log('grid updated');
+			// Update the displayed image on the canvas
+			const ctx = canvasElement.getContext('2d');
+			for (let y = 0; y < canvas.height; y++) {
+			  for (let x = 0; x < canvas.width; x++) {
+				const canvasElement = document.getElementById('canvas');
+				ctx.fillStyle = canvas.grid[x][y];
+				ctx.fillRect(x, y, 1, 1);
+			  }
+			}
+		  });
+
       setInterval(function() {
         // Send a request to the server to get the current state of the canvas
         fetch('/get_diff', {

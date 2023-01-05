@@ -42,24 +42,22 @@ func (srv *Server) doGetDiff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	diff := srv.places[req.PlaceID].canvas.Diff(srv.places[req.PlaceID].lastCanvas)
-
-	lastCanvas := painting.NewCanvasHex(
-		srv.places[req.PlaceID].canvas.GetHeight(),
-		srv.places[req.PlaceID].canvas.GetWidth(),
-	)
-
-	for i := range srv.places[req.PlaceID].canvas.Grid {
-		lastCanvas.Grid[i] = make([]painting.HexColor, srv.places[req.PlaceID].canvas.GetWidth())
-		copy(lastCanvas.Grid[i], srv.places[req.PlaceID].canvas.Grid[i])
-	}
-
-	srv.places[req.PlaceID].lastCanvas = lastCanvas
 	if debug {
 		log.Printf("get_diff: place-id=%s\n", req.PlaceID)
 	}
 
+	// Retrieve the diff from the map
+	diff := make([]painting.HexPixel, 0, len(srv.places[req.PlaceID].diff))
+	for _, pixel := range srv.places[req.PlaceID].diff {
+		diff = append(diff, pixel)
+	}
+
+	// Clear the diff map
+	srv.places[req.PlaceID].diff = make(map[int]painting.HexPixel)
+
+	// Send the diff
 	resp := agt.GetDiffResponse{Diff: diff}
+
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)
