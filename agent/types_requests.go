@@ -49,7 +49,7 @@ type GetDiffResponse struct {
 }
 
 type sendPixelsRequest struct {
-	pixels []painting.PixelToPlace
+	pixels []painting.HexPixel
 	id_am  string
 }
 

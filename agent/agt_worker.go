@@ -7,6 +7,7 @@ import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
+	"time"
 )
 
 func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat) *AgentWorker {
@@ -21,6 +22,7 @@ func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat) *AgentWorker 
 func (aw *AgentWorker) Start() {
 	aw.register()
 
+	// écoute les instructions
 	go func() {
 		for {
 			value := <-aw.Cout
@@ -29,6 +31,18 @@ func (aw *AgentWorker) Start() {
 				aw.tab = append(aw.tab, value.(sendPixelsRequest).pixels...)
 			default:
 				fmt.Println("Error: bad request")
+			}
+		}
+	}()
+
+	// place des pixels
+	go func() {
+		for {
+			if len(aw.tab) > 0 {
+				pixel := aw.tab[0]
+				aw.drawOnePixel(pixel)
+				aw.tab = aw.tab[1:]
+				time.Sleep(time.Second)
 			}
 		}
 	}()

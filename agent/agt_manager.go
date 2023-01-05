@@ -23,7 +23,7 @@ func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat) *AgentManager {
 func (am *AgentManager) Start() {
 	am.register()
 	am.updateWorkers()
-	am.convertImgToPixels(".\\usa", 0, 0)
+	am.convertImgToPixels("./usa", 0, 0)
 	am.sendPixelsToWorkers()
 }
 
@@ -87,8 +87,13 @@ func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offs
 	for scanner.Scan() {
 		str := scanner.Text()
 		if str != "!" {
-			tmpPixel := painting.NewPixelLocal(painting.StringToColor(str))
-			ptp := painting.NewPixelToPlaceLocal(tmpPixel, x_offset, y_offset)
+			//tmpPixel := painting.NewPixelLocal(painting.StringToColor(str))
+			//ptp := painting.NewPixelToPlaceLocal(tmpPixel, x_offset, y_offset)
+			ptp := painting.HexPixel{
+				X:     x_offset,
+				Y:     y_offset,
+				Color: painting.HexColor(str),
+			}
 			am.bufferImgLayout = append(am.bufferImgLayout, ptp)
 			x_offset++
 		} else {
@@ -122,7 +127,7 @@ func (am *AgentManager) sendPixelsToWorkers() {
 		start += plusOne
 		plusOne = 0
 
-		var pixelsToSend []painting.PixelToPlace
+		var pixelsToSend []painting.HexPixel
 		for j := low; j <= high; j++ {
 			pixelsToSend = append(pixelsToSend, am.bufferImgLayout[j])
 			//TODO : send pixels to workers channels

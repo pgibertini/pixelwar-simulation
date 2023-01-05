@@ -12,7 +12,7 @@ type Chat struct {
 
 type AgentWorker struct {
 	id      string
-	tab     []painting.PixelToPlace
+	tab     []painting.HexPixel
 	Hobbies []string
 	Cout    chan interface{}
 	Chat    *Chat
@@ -25,7 +25,7 @@ type AgentManager struct {
 	agts            []*AgentWorker
 	hobby           string
 	Chat            *Chat
-	bufferImgLayout []painting.PixelToPlace
+	bufferImgLayout []painting.HexPixel
 	Cin             chan interface{}
 	C_findWorkers   chan FindWorkersResponse
 	srvUrl          string
