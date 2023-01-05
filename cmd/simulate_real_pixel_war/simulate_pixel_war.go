@@ -32,7 +32,7 @@ func main() {
 	reader.Read()
 
 	// create a new place
-	placeID := agt.CreateNewPlace(url)
+	placeID := agt.CreateNewPlace(url, 2000, 2000)
 
 	// Read each record
 	i := 0
