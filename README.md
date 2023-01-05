@@ -13,9 +13,22 @@
 
 ## Contributors
 
+- Thomas Delplanque
+- Valentin Fagnet
+- Pierre Gibertini
+- Amaury Michel
+
 ## Usage
 
-Front-end basique : `http://localhost:8080/canvas?placeID=place1`
+### Simulation de la Pixel War 2022
+
+1. Lancer le serveur à l'aide du script `launch_server.go`
+2. Lancer le script envoyant des requêtes à partir des données au format `csv` : `simulate_pixel_war.go`
+3. Lancer le *front-end* depuis un navigateur : http://localhost:8080/canvas?placeID=place1
+
+> Nota Bene : le fichier `csv` de l'historique des actions n'est pas complet (370.000 premières actions). 
+> Vous pouvez télécharger le fichier complet (10GB compressé pour un fichier csv de 22GB) [sur cette page reddit](https://www.reddit.com/r/place/comments/txvk2d/rplace_datasets_april_fools_2022/).
+> Attention, le fichier n'est pas trié selon le `timestamp`.
 
 ## API
 
@@ -68,6 +81,8 @@ Front-end basique : `http://localhost:8080/canvas?placeID=place1`
 
 ### Commande `/get_pixel`
 
+> Retourne la couleur d'un pixel pour des coordonnées données.
+
 - Requête : `POST`
 - Objet `JSON` envoyé
 
@@ -92,6 +107,8 @@ Front-end basique : `http://localhost:8080/canvas?placeID=place1`
 
 ### Commande `/get_canvas`
 
+> Retourne l'entièreté de la grille.
+
 - Requête : `POST`
 - Objet `JSON` envoyé
 
@@ -100,13 +117,13 @@ Front-end basique : `http://localhost:8080/canvas?placeID=place1`
 | `place-id`   | `string` | `"place1"`                   |
 | `reset-diff` | `bool`   | `false`                      |
 
-L'argument `reset-diff` à `true` permet de réinitialiser la valeur de `diff` d'une grille donnée.
+> L'argument `reset-diff` à `true` permet de réinitialiser la valeur de `diff` d'une grille donnée.
 La valeur de `diff` permet de stocker les pixels ayant été modifiés entre 2 requêtes `/get_diff`.
 
-Rajouter cet attribut est utile au front-end pour afficher l'état de la grille dans un premier temps avec une requête
+> Rajouter cet attribut est utile au front-end pour afficher l'état de la grille dans un premier temps avec une requête
 `/get_canvas` puis d'actualiser son état avec des requêtes `/get_diff`.
 
-Cet argument permet à la première `/get_diff` de ne renvoyer que la différence depuis la requête `/get_canvas`, 
+> Cet argument permet à la première `/get_diff` de ne renvoyer que la différence depuis la requête `/get_canvas`, 
 et non depuis toujours.
 
 - Code retour
@@ -126,7 +143,7 @@ et non depuis toujours.
 
 ### Commande `/get_diff`
 
-Retourne les pixels qui différent depuis la dernière requête `/get_diff` sur une grille donnée.
+> Retourne les pixels qui différent depuis la dernière requête `/get_diff` sur une grille donnée.
 
 - Requête : `POST`
 - Objet `JSON` envoyé
