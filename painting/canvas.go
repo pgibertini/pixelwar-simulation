@@ -48,11 +48,11 @@ func NewCanvasHex(h int, w int) *CanvasHex {
 	}
 }
 
-func (c CanvasHex) Diff(grid [][]HexColor) []HexPixel {
+func (c *CanvasHex) Diff(cd *CanvasHex) []HexPixel {
 	var diffs []HexPixel
 	for i := 0; i < c.GetWidth(); i++ {
 		for j := 0; j < c.GetWidth(); j++ {
-			if c.Grid[i][j] != grid[i][j] {
+			if c.Grid[i][j] != cd.Grid[i][j] {
 				diffs = append(diffs, HexPixel{i, j, c.Grid[i][j]})
 			}
 		}

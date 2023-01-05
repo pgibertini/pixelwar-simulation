@@ -43,6 +43,10 @@ type GetCanvasResponse struct {
 	Grid   [][]painting.HexColor `json:"grid"`
 }
 
+type GetDiffResponse struct {
+	Diff []painting.HexPixel `json:"diff"`
+}
+
 type sendPixelsRequest struct {
 	pixels []painting.PixelToPlace
 	id_am  string
