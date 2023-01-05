@@ -1,6 +1,13 @@
 package agent
 
-import "math/rand"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
+	"net/http"
+	"strings"
+)
 
 func ContainsHobby(hobbies []string, hobby string) bool {
 	for _, v := range hobbies {
@@ -41,4 +48,35 @@ func MakeRandomSliceOfHobbies(hobbies []string) (result []string) {
 		result = append(result, hobbies[k])
 	}
 	return
+}
+
+func CreateNewPlace(url string) (placeID string) {
+	// Send a new_place request to the server
+	resp, err := http.Post(
+		"http://localhost:8080/new_place",
+		"application/json",
+		strings.NewReader(fmt.Sprintf(`{"height":%d,"width":%d}`,
+			2000,
+			2000,
+		)))
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %v\n", err)
+		return
+	}
+
+	// Unmarshal the response into a NewPlaceResponse struct
+	var newPlaceResponse NewPlaceResponse
+	err = json.Unmarshal(body, &newPlaceResponse)
+	if err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return
+	}
+
+	// The place ID is now stored in newPlaceResponse.PlaceID
+	placeID = newPlaceResponse.PlaceID
+
+	return placeID
 }
