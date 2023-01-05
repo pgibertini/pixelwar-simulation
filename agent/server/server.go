@@ -57,50 +57,5 @@ func (srv *Server) Start() {
 
 	log.Println("Listening on", srv.Address)
 
-	go func() {
-		for {
-			value := <-srv.Cin
-			switch value.(type) {
-			case *agt.AgentManager:
-				srv.registerManager(value.(*agt.AgentManager))
-			case *agt.AgentWorker:
-				srv.registerWorker(value.(*agt.AgentWorker))
-			case agt.FindWorkersRequest:
-				srv.findWorkersRespond(value.(agt.FindWorkersRequest))
-				(srv.Ams[agt.GetManagerIndex(srv.Ams, (value.(agt.FindWorkersRequest)).Id_manager)]).C_findWorkers <- srv.findWorkersRespond(value.(agt.FindWorkersRequest))
-			default:
-				fmt.Println("Error: bad request")
-			}
-		}
-	}()
-
 	go log.Fatal(s.ListenAndServe())
-}
-
-func (srv *Server) registerManager(am *agt.AgentManager) {
-	fmt.Printf("Registering a manager. ID = %s\n", am.GetID())
-	srv.Ams = append(srv.Ams, am)
-}
-
-func (srv *Server) registerWorker(aw *agt.AgentWorker) {
-	fmt.Printf("Registering a worker. ID = %s\n", aw.GetID())
-	srv.Aws = append(srv.Aws, aw)
-}
-
-func (srv *Server) findWorkersRespond(req agt.FindWorkersRequest) agt.FindWorkersResponse {
-	var resp agt.FindWorkersResponse
-	for _, v := range srv.Aws {
-		if agt.ContainsHobby(v.Hobbies, req.Hobby) {
-			resp.Workers = append(resp.Workers, v)
-		}
-	}
-	return resp
-}
-
-func (srv *Server) GetManagers() []*agt.AgentManager {
-	return srv.Ams
-}
-
-func (srv *Server) GetWorkers() []*agt.AgentWorker {
-	return srv.Aws
 }
