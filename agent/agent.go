@@ -1,4 +1,4 @@
-package agent
+package server
 
 import (
 	"bufio"
@@ -14,7 +14,7 @@ import (
 type AgentWorker struct {
 	id      string
 	tab     []painting.PixelToPlace
-	hobbies []string
+	Hobbies []string
 	Cout    chan interface{}
 	Srv     *Server
 }
@@ -26,14 +26,14 @@ type AgentManager struct {
 	Srv             *Server
 	bufferImgLayout []painting.PixelToPlace
 	Cin             chan interface{}
-	C_findWorkers   chan findWorkersResponse
+	C_findWorkers   chan FindWorkersResponse
 }
 
 func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker {
 	channel := make(chan interface{})
 	return &AgentWorker{
 		id:      idAgt,
-		hobbies: hobbiesAgt,
+		Hobbies: hobbiesAgt,
 		Cout:    channel,
 		Srv:     srv}
 }
@@ -59,7 +59,7 @@ func (aw *AgentWorker) GetID() string {
 }
 
 func (aw *AgentWorker) GetHobbies() []string {
-	return aw.hobbies
+	return aw.Hobbies
 }
 
 func (aw *AgentWorker) drawOnePixel(pixel painting.Pixel) {
@@ -74,7 +74,7 @@ func (aw *AgentWorker) register() {
 
 func NewAgentManager(idAgt string, hobbyAgt string, srv *Server) *AgentManager {
 	cin := make(chan interface{})
-	cout := make(chan findWorkersResponse)
+	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
 		id:            idAgt,
 		hobby:         hobbyAgt,
@@ -90,7 +90,7 @@ func (am *AgentManager) Start() {
 	am.sendPixelsToWorkers()
 }
 
-func (am *AgentManager) getID() string {
+func (am *AgentManager) GetID() string {
 	return am.id
 }
 
@@ -101,17 +101,17 @@ func (am *AgentManager) register() {
 func (am *AgentManager) updateWorkers() {
 	// Not sure of this. Can AgentWorkers change their hobbies?
 	for k, v := range am.agts {
-		if !containsHobby(v.hobbies, am.hobby) {
+		if !ContainsHobby(v.Hobbies, am.hobby) {
 			am.agts = remove(am.agts, k)
 		}
 	}
-	req := findWorkersRequest{am.id, am.hobby}
+	req := FindWorkersRequest{am.id, am.hobby}
 	(am.Srv).Cin <- req
 
 	fmt.Println("Voici ma liste initiale de workers : ", am.agts)
 
 	var wg sync.WaitGroup
-	var resp findWorkersResponse
+	var resp FindWorkersResponse
 
 	wg.Add(1)
 	go func() {
@@ -123,7 +123,7 @@ func (am *AgentManager) updateWorkers() {
 	wg.Wait()
 	fmt.Println("Réponse reçue ! : ", resp)
 
-	for _, v := range resp.workers {
+	for _, v := range resp.Workers {
 		if exists(am.agts, v.id) == -1 {
 			am.agts = append(am.agts, v)
 		}
@@ -197,7 +197,7 @@ func (am *AgentManager) sendPixelsToWorkers() {
 
 // ============================ Utilities ============================
 
-func containsHobby(hobbies []string, hobby string) bool {
+func ContainsHobby(hobbies []string, hobby string) bool {
 	for _, v := range hobbies {
 		if v == hobby {
 			return true
@@ -215,7 +215,7 @@ func exists(s []*AgentWorker, id string) int {
 	return -1
 }
 
-func getManagerIndex(s []*AgentManager, id string) int {
+func GetManagerIndex(s []*AgentManager, id string) int {
 	for k, v := range s {
 		if v.id == id {
 			return k

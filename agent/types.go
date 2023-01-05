@@ -1,4 +1,4 @@
-package agent
+package server
 
 import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
@@ -8,19 +8,19 @@ import (
 
 type Server struct {
 	sync.Mutex
-	identifier string
-	address    string
-	places     map[string]*Place
-	ams        []*AgentManager
-	aws        []*AgentWorker
+	Identifier string
+	Address    string
+	Places     map[string]*Place
+	Ams        []*AgentManager
+	Aws        []*AgentWorker
 	Cin        chan interface{}
 }
 
 type Place struct {
-	id         string
-	canvas     *painting.CanvasHex
-	lastAction map[string]time.Time
-	cooldown   time.Duration
+	Id         string
+	Canvas     *painting.CanvasHex
+	LastAction map[string]time.Time
+	Cooldown   time.Duration
 }
 
 type NewPlaceRequest struct {
@@ -66,12 +66,12 @@ type sendPixelsRequest struct {
 	id_am  string
 }
 
-type findWorkersRequest struct {
+type FindWorkersRequest struct {
 	Id_manager string
-	hobby      string
+	Hobby      string
 }
 
-type findWorkersResponse struct {
-	workers []*AgentWorker
+type FindWorkersResponse struct {
+	Workers []*AgentWorker
 	places  map[string]*Place
 }

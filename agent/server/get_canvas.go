@@ -1,14 +1,15 @@
-package agent
+package server
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"log"
 	"net/http"
 )
 
-func (*Server) decodeGetCanvasRequest(r *http.Request) (req GetCanvasRequest, err error) {
+func (*Server) decodeGetCanvasRequest(r *http.Request) (req agt.GetCanvasRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -33,22 +34,22 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the place-id exists
-	if _, exists := srv.places[req.PlaceID]; exists {
+	if _, exists := srv.Places[req.PlaceID]; exists {
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "invalid place-id")
 		return
 	}
 
-	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
-	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
-	grid := &srv.places[req.PlaceID].canvas.Grid
+	gridHeight := srv.Places[req.PlaceID].Canvas.GetHeight()
+	gridWidth := srv.Places[req.PlaceID].Canvas.GetWidth()
+	grid := &srv.Places[req.PlaceID].Canvas.Grid
 
 	if debug {
 		log.Printf("get_canvas: place-id=%s\n", req.PlaceID)
 	}
 
-	resp := GetCanvasResponse{gridHeight, gridWidth, *grid}
+	resp := agt.GetCanvasResponse{Height: gridHeight, Width: gridWidth, Grid: *grid}
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

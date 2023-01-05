@@ -1,4 +1,4 @@
-package agent
+package server
 
 import (
 	"fmt"
@@ -75,7 +75,7 @@ func (srv *Server) doCanvas(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve the canvas from the server's map of places
 	srv.Lock()
-	place, ok := srv.places[placeID]
+	place, ok := srv.Places[placeID]
 	srv.Unlock()
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
@@ -87,8 +87,8 @@ func (srv *Server) doCanvas(w http.ResponseWriter, r *http.Request) {
 	tpl := template.Must(template.New("canvas").Parse(canvasTemplate))
 	err := tpl.Execute(w, map[string]interface{}{
 		"PlaceID": placeID,
-		"Width":   place.canvas.GetWidth(),
-		"Height":  place.canvas.GetHeight(),
+		"Width":   place.Canvas.GetWidth(),
+		"Height":  place.Canvas.GetHeight(),
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

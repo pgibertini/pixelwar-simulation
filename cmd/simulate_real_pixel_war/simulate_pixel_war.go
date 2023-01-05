@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
+	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// Unmarshal the response into a NewPlaceResponse struct
-	var newPlaceResponse agent.NewPlaceResponse
+	var newPlaceResponse agt.NewPlaceResponse
 	err = json.Unmarshal(body, &newPlaceResponse)
 	if err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)

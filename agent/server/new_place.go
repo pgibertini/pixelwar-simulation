@@ -1,16 +1,17 @@
-package agent
+package server
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
 	"time"
 )
 
-func (*Server) decodeNewPlaceRequest(r *http.Request) (req NewPlaceRequest, err error) {
+func (*Server) decodeNewPlaceRequest(r *http.Request) (req agt.NewPlaceRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
@@ -35,16 +36,16 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
-	id := fmt.Sprintf("place%d", len(srv.places)+1)
-	place := Place{
-		id:         id,
-		canvas:     painting.NewCanvasHex(req.Height, req.Width),
-		lastAction: make(map[string]time.Time),
-		cooldown:   req.Cooldown * time.Second,
+	id := fmt.Sprintf("place%d", len(srv.Places)+1)
+	place := agt.Place{
+		Id:         id,
+		Canvas:     painting.NewCanvasHex(req.Height, req.Width),
+		LastAction: make(map[string]time.Time),
+		Cooldown:   req.Cooldown * time.Second,
 	}
-	srv.places[id] = &place
+	srv.Places[id] = &place
 
-	resp := NewPlaceResponse{PlaceID: id}
+	resp := agt.NewPlaceResponse{PlaceID: id}
 	w.WriteHeader(http.StatusCreated)
 
 	if debug {
