@@ -51,9 +51,11 @@ func MakeRandomSliceOfHobbies(hobbies []string) (result []string) {
 }
 
 func CreateNewPlace(url string) (placeID string) {
+	url = url + "/new_place"
+
 	// Send a new_place request to the server
 	resp, err := http.Post(
-		"http://localhost:8080/new_place",
+		url,
 		"application/json",
 		strings.NewReader(fmt.Sprintf(`{"height":%d,"width":%d}`,
 			2000,
