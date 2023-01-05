@@ -3,74 +3,11 @@ package server
 import (
 	"bufio"
 	"fmt"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
-	"math/rand"
 	"os"
 	"sync"
-
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 )
-
-type AgentWorker struct {
-	id      string
-	tab     []painting.PixelToPlace
-	Hobbies []string
-	Cout    chan interface{}
-	Srv     *Server
-}
-
-type AgentManager struct {
-	id              string
-	agts            []*AgentWorker
-	hobby           string
-	Srv             *Server
-	bufferImgLayout []painting.PixelToPlace
-	Cin             chan interface{}
-	C_findWorkers   chan FindWorkersResponse
-}
-
-func NewAgentWorker(idAgt string, hobbiesAgt []string, srv *Server) *AgentWorker {
-	channel := make(chan interface{})
-	return &AgentWorker{
-		id:      idAgt,
-		Hobbies: hobbiesAgt,
-		Cout:    channel,
-		Srv:     srv}
-}
-
-func (aw *AgentWorker) Start() {
-	aw.register()
-
-	go func() {
-		for {
-			value := <-aw.Cout
-			switch value.(type) {
-			case sendPixelsRequest:
-				aw.tab = append(aw.tab, value.(sendPixelsRequest).pixels...)
-			default:
-				fmt.Println("Error: bad request")
-			}
-		}
-	}()
-}
-
-func (aw *AgentWorker) GetID() string {
-	return aw.id
-}
-
-func (aw *AgentWorker) GetHobbies() []string {
-	return aw.Hobbies
-}
-
-func (aw *AgentWorker) drawOnePixel(pixel painting.Pixel) {
-
-}
-
-func (aw *AgentWorker) register() {
-	(aw.Srv).Cin <- aw
-}
-
-// ============================ AgentManager ============================
 
 func NewAgentManager(idAgt string, hobbyAgt string, srv *Server) *AgentManager {
 	cin := make(chan interface{})
@@ -193,47 +130,4 @@ func (am *AgentManager) sendPixelsToWorkers() {
 		request := sendPixelsRequest{pixelsToSend, am.id}
 		am.agts[i].Cout <- request
 	}
-}
-
-// ============================ Utilities ============================
-
-func ContainsHobby(hobbies []string, hobby string) bool {
-	for _, v := range hobbies {
-		if v == hobby {
-			return true
-		}
-	}
-	return false
-}
-
-func exists(s []*AgentWorker, id string) int {
-	for k, v := range s {
-		if v.id == id {
-			return k
-		}
-	}
-	return -1
-}
-
-func GetManagerIndex(s []*AgentManager, id string) int {
-	for k, v := range s {
-		if v.id == id {
-			return k
-		}
-	}
-	return -1
-}
-
-func remove[T comparable](s []T, i int) []T {
-	s[i] = s[len(s)-1]
-	return s[:len(s)-1]
-}
-
-func MakeRandomSliceOfHobbies(hobbies []string) (result []string) {
-	result = make([]string, 0)
-	for i := 0; i < 1; i++ {
-		k := rand.Intn(len(hobbies))
-		result = append(result, hobbies[k])
-	}
-	return
 }
