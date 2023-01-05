@@ -7,6 +7,7 @@ import (
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -16,7 +17,7 @@ import (
 func main() {
 	// Open the CSV file
 	// Get the dataset at https://www.reddit.com/r/place/comments/txvk2d/rplace_datasets_april_fools_2022/
-	csvFile, err := os.Open("./cmd/simulate_real_pixel_war/place_history_sample.csv")
+	csvFile, err := os.Open("./cmd/simulate_real_pixel_war/sorted_2022_place_canvas_history.csv")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -63,6 +64,7 @@ func main() {
 	}
 
 	// Read each record
+	i := 0
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
@@ -72,6 +74,10 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+		if (i % 10000) == 0 {
+			log.Printf("Pixel #%d\n", i)
+		}
+		i++
 
 		// Get the values from the record
 		userID := record[1]
