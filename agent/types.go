@@ -23,6 +23,12 @@ type Place struct {
 	Cooldown   time.Duration
 }
 
+type Chat struct {
+	Ams []*AgentManager
+	Aws []*AgentWorker
+	Cin chan interface{}
+}
+
 type AgentWorker struct {
 	id      string
 	tab     []painting.PixelToPlace
