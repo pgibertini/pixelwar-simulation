@@ -27,3 +27,9 @@ type PixelToPlace struct {
 	y     int
 	pixel Pixel
 }
+
+type HexPixel struct {
+	X     int
+	Y     int
+	color HexColor
+}

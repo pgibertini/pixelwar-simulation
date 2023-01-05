@@ -24,12 +24,12 @@ func NewCanvas(h int, w int) *Canvas {
 	}
 }
 
-func (p *CanvasHex) GetWidth() int {
-	return p.width
+func (c *CanvasHex) GetWidth() int {
+	return c.width
 }
 
-func (p *CanvasHex) GetHeight() int {
-	return p.height
+func (c *CanvasHex) GetHeight() int {
+	return c.height
 }
 
 func NewCanvasHex(h int, w int) *CanvasHex {
@@ -46,4 +46,16 @@ func NewCanvasHex(h int, w int) *CanvasHex {
 		width:  w,
 		Grid:   grid,
 	}
+}
+
+func (c CanvasHex) Diff(grid [][]HexColor) []HexPixel {
+	var diffs []HexPixel
+	for i := 0; i < c.GetWidth(); i++ {
+		for j := 0; j < c.GetWidth(); j++ {
+			if c.Grid[i][j] != grid[i][j] {
+				diffs = append(diffs, HexPixel{i, j, c.Grid[i][j]})
+			}
+		}
+	}
+	return diffs
 }
