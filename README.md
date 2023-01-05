@@ -25,6 +25,7 @@
 1. Lancer le serveur à l'aide du script `launch_server.go`
 2. Lancer le script envoyant des requêtes à partir des données au format `csv` : `simulate_pixel_war.go`
 3. Lancer le *front-end* depuis un navigateur : http://localhost:8080/canvas?placeID=place1
+4. Visualiser la grille se dessiner à plus de 30 FPS et plus de 3000 changements d'état de pixel par seconde !
 
 > Nota Bene : le fichier `csv` de l'historique des actions n'est pas complet (370.000 premières actions). 
 > Vous pouvez télécharger le fichier complet (10GB compressé pour un fichier csv de 22GB) [sur cette page reddit](https://www.reddit.com/r/place/comments/txvk2d/rplace_datasets_april_fools_2022/).
