@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
 	"time"
@@ -84,6 +85,9 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 
 	// rgb, err := req.Color.ToRGB()
 	srv.places[req.PlaceID].canvas.Grid[req.X][req.Y] = req.Color
+
+	p := painting.HexPixel{req.X, req.Y, req.Color}
+	srv.places[req.PlaceID].diff[req.X*srv.places[req.PlaceID].canvas.GetWidth()+req.Y] = p
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -10,14 +10,14 @@ import (
 	"net/http"
 )
 
-func (*Server) decodeGetCanvasRequest(r *http.Request) (req agt.GetCanvasRequest, err error) {
+func (*Server) decodeGetDiffRequest(r *http.Request) (req agt.GetCanvasRequest, err error) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	err = json.Unmarshal(buf.Bytes(), &req)
 	return
 }
 
-func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) doGetDiff(w http.ResponseWriter, r *http.Request) {
 	srv.Lock()
 	defer srv.Unlock()
 
@@ -27,7 +27,7 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// décodage de la requête
-	req, err := srv.decodeGetCanvasRequest(r)
+	req, err := srv.decodeGetDiffRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err.Error())
@@ -42,20 +42,22 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// traitement de la requête
-	gridHeight := srv.places[req.PlaceID].canvas.GetHeight()
-	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
-	grid := &srv.places[req.PlaceID].canvas.Grid
-
 	if debug {
-		log.Printf("get_canvas: place-id=%s\n", req.PlaceID)
+		log.Printf("get_diff: place-id=%s\n", req.PlaceID)
 	}
 
-	if req.ResetDiff {
-		srv.places[req.PlaceID].diff = make(map[int]painting.HexPixel)
+	// Retrieve the diff from the map
+	diff := make([]painting.HexPixel, 0, len(srv.places[req.PlaceID].diff))
+	for _, pixel := range srv.places[req.PlaceID].diff {
+		diff = append(diff, pixel)
 	}
 
-	resp := agt.GetCanvasResponse{Height: gridHeight, Width: gridWidth, Grid: *grid}
+	// Clear the diff map
+	srv.places[req.PlaceID].diff = make(map[int]painting.HexPixel)
+
+	// Send the diff
+	resp := agt.GetDiffResponse{Diff: diff}
+
 	w.WriteHeader(http.StatusOK)
 
 	serial, _ := json.Marshal(resp)

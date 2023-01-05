@@ -34,13 +34,18 @@ type GetPixelResponse struct {
 }
 
 type GetCanvasRequest struct {
-	PlaceID string `json:"place-id"`
+	PlaceID   string `json:"place-id"`
+	ResetDiff bool   `json:"reset-diff"`
 }
 
 type GetCanvasResponse struct {
 	Height int                   `json:"height"`
 	Width  int                   `json:"width"`
 	Grid   [][]painting.HexColor `json:"grid"`
+}
+
+type GetDiffResponse struct {
+	Diff []painting.HexPixel `json:"diff"`
 }
 
 type sendPixelsRequest struct {

@@ -42,6 +42,7 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 		canvas:     painting.NewCanvasHex(req.Height, req.Width),
 		lastAction: make(map[string]time.Time),
 		cooldown:   req.Cooldown * time.Second,
+		diff:       make(map[int]painting.HexPixel),
 	}
 	srv.places[id] = &place
 

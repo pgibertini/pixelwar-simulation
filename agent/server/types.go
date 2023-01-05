@@ -18,4 +18,5 @@ type Place struct {
 	canvas     *painting.CanvasHex
 	lastAction map[string]time.Time
 	cooldown   time.Duration
+	diff       map[int]painting.HexPixel
 }
