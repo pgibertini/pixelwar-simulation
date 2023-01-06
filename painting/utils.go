@@ -2,6 +2,7 @@ package painting
 
 import (
 	"fmt"
+	"math/rand"
 	"regexp"
 	"strconv"
 )
@@ -39,4 +40,11 @@ func Hex2RGB(hex HexColor) (rgb Color, err error) {
 func RGB2Hex(rgb Color) (hex HexColor) {
 	hex = HexColor(fmt.Sprintf("#%02x%02x%02x", rgb.R, rgb.G, rgb.B))
 	return
+}
+
+func ShuffleHexPixels(slice []HexPixel) {
+	for i := range slice {
+		j := rand.Intn(i + 1)
+		slice[i], slice[j] = slice[j], slice[i]
+	}
 }

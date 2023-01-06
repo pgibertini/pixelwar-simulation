@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat) *AgentManager {
+func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat, placeID string, url string) *AgentManager {
 	cin := make(chan interface{})
 	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
@@ -17,18 +17,25 @@ func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat) *AgentManager {
 		hobby:         hobbyAgt,
 		Chat:          chat,
 		Cin:           cin,
-		C_findWorkers: cout}
+		C_findWorkers: cout,
+		placeId:       placeID,
+		srvUrl:        url,
+	}
 }
 
 func (am *AgentManager) Start() {
 	am.register()
 	am.updateWorkers()
-	am.convertImgToPixels(".\\usa", 0, 0)
-	am.sendPixelsToWorkers()
+	//am.convertImgToPixels("./usa", 0, 0)
+	//am.sendPixelsToWorkers()
 }
 
 func (am *AgentManager) GetID() string {
 	return am.id
+}
+
+func (am *AgentManager) GetHobby() string {
+	return am.hobby
 }
 
 func (am *AgentManager) register() {
@@ -87,8 +94,13 @@ func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offs
 	for scanner.Scan() {
 		str := scanner.Text()
 		if str != "!" {
-			tmpPixel := painting.NewPixelLocal(painting.StringToColor(str))
-			ptp := painting.NewPixelToPlaceLocal(tmpPixel, x_offset, y_offset)
+			//tmpPixel := painting.NewPixelLocal(painting.StringToColor(str))
+			//ptp := painting.NewPixelToPlaceLocal(tmpPixel, x_offset, y_offset)
+			ptp := painting.HexPixel{
+				X:     x_offset,
+				Y:     y_offset,
+				Color: painting.HexColor(str),
+			}
 			am.bufferImgLayout = append(am.bufferImgLayout, ptp)
 			x_offset++
 		} else {
@@ -122,12 +134,45 @@ func (am *AgentManager) sendPixelsToWorkers() {
 		start += plusOne
 		plusOne = 0
 
-		var pixelsToSend []painting.PixelToPlace
+		var pixelsToSend []painting.HexPixel
 		for j := low; j <= high; j++ {
 			pixelsToSend = append(pixelsToSend, am.bufferImgLayout[j])
 			//TODO : send pixels to workers channels
 		}
 		request := sendPixelsRequest{pixelsToSend, am.id}
 		am.agts[i].Cout <- request
+	}
+}
+
+func (am *AgentManager) AddPixelsToBuffer(p []painting.HexPixel) {
+	am.bufferImgLayout = append(am.bufferImgLayout, p...)
+}
+
+func (am *AgentManager) divideWork() [][]painting.HexPixel {
+	numWorkers := len(am.agts)
+	workPerWorker := len(am.bufferImgLayout) / numWorkers
+	remainder := len(am.bufferImgLayout) % numWorkers
+
+	workList := make([][]painting.HexPixel, numWorkers)
+	for i := 0; i < numWorkers; i++ {
+		startIndex := i * workPerWorker
+		endIndex := startIndex + workPerWorker
+
+		if i == numWorkers-1 {
+			endIndex += remainder
+		}
+
+		workList[i] = am.bufferImgLayout[startIndex:endIndex]
+	}
+
+	return workList
+}
+
+func (am *AgentManager) DistributeWork() {
+	workList := am.divideWork()
+	for i, agt := range am.agts {
+		request := sendPixelsRequest{workList[i], am.id}
+		agt.Cout <- request
+		// TODO : have the channel saved directly
 	}
 }

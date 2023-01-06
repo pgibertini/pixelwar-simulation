@@ -2,6 +2,7 @@ package agent
 
 import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
+	"sync"
 )
 
 type Chat struct {
@@ -12,10 +13,13 @@ type Chat struct {
 
 type AgentWorker struct {
 	id      string
-	tab     []painting.PixelToPlace
+	tab     []painting.HexPixel
 	Hobbies []string
 	Cout    chan interface{}
 	Chat    *Chat
+	srvUrl  string
+	placeId string
+	mu      sync.Mutex
 }
 
 type AgentManager struct {
@@ -23,7 +27,9 @@ type AgentManager struct {
 	agts            []*AgentWorker
 	hobby           string
 	Chat            *Chat
-	bufferImgLayout []painting.PixelToPlace
+	bufferImgLayout []painting.HexPixel
 	Cin             chan interface{}
 	C_findWorkers   chan FindWorkersResponse
+	srvUrl          string
+	placeId         string
 }
