@@ -173,7 +173,7 @@ func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err 
 	}
 
 	// sérialisation de la requête
-	url := am.srvUrl + "/paint_pixel"
+	url := am.srvUrl + "/get_pixel"
 	data, err := json.Marshal(req)
 	if err != nil {
 		return
@@ -213,15 +213,21 @@ func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err 
 // GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
 func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
 	unplacedPixels := make([]painting.HexPixel, 0)
+	var wg sync.WaitGroup
 	for _, pixel := range am.pixelsToPlace {
-		color, err := am.getPixelRequest(pixel.X, pixel.Y)
-		if err != nil {
-			log.Printf("Error getting pixel color: %v\n", err)
-			continue
-		}
-		if color != pixel.Color {
-			unplacedPixels = append(unplacedPixels, pixel)
-		}
+		wg.Add(1)
+		go func(x, y int, color painting.HexColor) {
+			defer wg.Done()
+			c, err := am.getPixelRequest(x, y)
+			if err != nil {
+				log.Printf("Error getting pixel color: %v\n", err)
+				return
+			}
+			if c != color {
+				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
+			}
+		}(pixel.X, pixel.Y, pixel.Color)
 	}
+	wg.Wait()
 	return unplacedPixels
 }

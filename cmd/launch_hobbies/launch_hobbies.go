@@ -56,7 +56,7 @@ func main() {
 
 	// sending pixel to workers
 	for _, m := range managers {
-		m.DistributeWork()
+		go m.DistributeWork()
 	}
 
 	fmt.Scanln()
