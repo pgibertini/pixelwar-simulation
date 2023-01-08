@@ -98,9 +98,11 @@ func (am *AgentManager) AddPixelsToPlace(p []painting.HexPixel) {
 }
 
 func (am *AgentManager) divideWork() [][]painting.HexPixel {
+	unplacedPixels := am.GetUnplacedPixels()
+
 	numWorkers := len(am.workers)
-	workPerWorker := len(am.pixelsToPlace) / numWorkers
-	remainder := len(am.pixelsToPlace) % numWorkers
+	workPerWorker := len(unplacedPixels) / numWorkers
+	remainder := len(unplacedPixels) % numWorkers
 
 	workList := make([][]painting.HexPixel, numWorkers)
 	for i := 0; i < numWorkers; i++ {
@@ -111,7 +113,7 @@ func (am *AgentManager) divideWork() [][]painting.HexPixel {
 			endIndex += remainder
 		}
 
-		workList[i] = am.pixelsToPlace[startIndex:endIndex]
+		workList[i] = unplacedPixels[startIndex:endIndex]
 	}
 
 	return workList
