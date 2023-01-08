@@ -64,23 +64,23 @@ func FileToLayout(filePath string) (int, int, [][]HexColor, error) {
 	// Get the dimensions of the layout
 	scanner.Scan()
 	str := scanner.Text()
-	width, err := strconv.Atoi(str)
+	height, err := strconv.Atoi(str)
 	if err != nil {
 		return 0, 0, nil, err
 	}
 	scanner.Scan()
 	str = scanner.Text()
-	height, err := strconv.Atoi(str)
+	width, err := strconv.Atoi(str)
 	if err != nil {
 		return 0, 0, nil, err
 	}
 
 	// Create the layout
-	layout := make([][]HexColor, width)
-	for i := 0; i < width; i++ {
+	layout := make([][]HexColor, height)
+	for i := 0; i < height; i++ {
 		// Create each row of the layout
-		layout[i] = make([]HexColor, height)
-		for j := 0; j < height; j++ {
+		layout[i] = make([]HexColor, width)
+		for j := 0; j < width; j++ {
 			scanner.Scan()
 			str = scanner.Text()
 			layout[i][j] = HexColor(str)

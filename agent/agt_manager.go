@@ -7,8 +7,10 @@ import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"sync"
+	"time"
 )
 
 func NewAgentManager(id string, hobby string, chat *Chat) *AgentManager {
@@ -34,10 +36,16 @@ func (am *AgentManager) GetHobby() string {
 }
 
 func (am *AgentManager) Start() {
+	rand.Seed(time.Now().UnixNano())
 	am.register()
 	am.updateWorkers()
-	//am.LoadLayoutFromFile("./images/BlueMario", 0, 0)
-	//am.sendPixelsToWorkers()
+	am.LoadLayoutFromFile(fmt.Sprintf("./images/%s", am.GetHobby()))
+	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
+		am.ImgLayout,
+		rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
+		rand.Intn(am.Chat.GetHeight()-am.Painting.Height),
+	))
+	am.DistributeWork()
 }
 
 func (am *AgentManager) register() {
@@ -109,12 +117,12 @@ func (am *AgentManager) divideWork(pixels []painting.HexPixel) [][]painting.HexP
 	for i := 0; i < numWorkers; i++ {
 		startIndex := i * workPerWorker
 		endIndex := startIndex + workPerWorker
-
-		if i == numWorkers-1 {
-			endIndex += remainder
-		}
-
 		workList[i] = pixels[startIndex:endIndex]
+	}
+
+	// add the remainder
+	for i := 0; i < remainder; i++ {
+		workList[i] = append(workList[i], pixels[(numWorkers)*workPerWorker+i])
 	}
 
 	return workList

@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
-	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
-	"math/rand"
 	"strconv"
 	"time"
 )
@@ -15,14 +13,14 @@ func main() {
 	url := "http://localhost:8080"
 	nWorkers := 100
 	size := 500
-	cooldown := 1
+	cooldown := 5
 
 	// create a new place
 	placeID := agt.CreateNewPlace(url, size, size, cooldown)
 	log.Printf("Playing on %s", placeID)
 
 	// chat for agents discussion
-	myChat := agt.NewChat(placeID, url, cooldown)
+	myChat := agt.NewChat(placeID, url, cooldown, size, size)
 	go myChat.Start()
 
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger"}
@@ -40,23 +38,13 @@ func main() {
 
 	// starting the agents
 	for _, w := range workers {
-		w.Start()
+		go w.Start()
 	}
 
-	for _, m := range managers {
-		m.Start()
-	}
+	time.Sleep(time.Second)
 
-	// giving pixel to place
 	for _, m := range managers {
-		rand.Seed(time.Now().UnixNano())
-		m.LoadLayoutFromFile(fmt.Sprintf("./images/%s", m.GetHobby()))
-		m.AddPixelsToPlace(painting.ImgLayoutToPixelList(m.ImgLayout, rand.Intn(size/2), rand.Intn(size/2)))
-	}
-
-	// sending pixel to workers
-	for _, m := range managers {
-		go m.DistributeWork()
+		go m.Start()
 	}
 
 	fmt.Scanln()
