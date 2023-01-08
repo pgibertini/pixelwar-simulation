@@ -12,6 +12,8 @@ type Chat struct {
 	srvUrl   string
 	placeId  string
 	cooldown int
+	height   int
+	width    int
 }
 
 type AgentWorker struct {

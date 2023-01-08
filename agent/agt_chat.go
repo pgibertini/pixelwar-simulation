@@ -5,13 +5,15 @@ import (
 	"log"
 )
 
-func NewChat(placeID string, url string, cooldown int) *Chat {
+func NewChat(placeID string, url string, cooldown, height, width int) *Chat {
 	cin := make(chan interface{})
 	return &Chat{
 		Cin:      cin,
-		placeId:  placeID,
 		srvUrl:   url,
+		placeId:  placeID,
 		cooldown: cooldown,
+		height:   height,
+		width:    width,
 	}
 }
 
@@ -76,4 +78,12 @@ func (srv *Chat) GetPlaceID() string {
 
 func (srv *Chat) GetCooldown() int {
 	return srv.cooldown
+}
+
+func (srv *Chat) GetHeight() int {
+	return srv.height
+}
+
+func (srv *Chat) GetWidth() int {
+	return srv.width
 }
