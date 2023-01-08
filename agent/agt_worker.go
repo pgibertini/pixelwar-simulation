@@ -47,7 +47,7 @@ func (aw *AgentWorker) Start() {
 			aw.mu.Lock()
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
-				err := aw.paintPixel(pixel)
+				err := aw.paintPixelRequest(pixel)
 				if err == nil {
 					aw.tab = aw.tab[1:]
 				} else {
@@ -60,6 +60,8 @@ func (aw *AgentWorker) Start() {
 	}()
 }
 
+// GETTERS
+
 func (aw *AgentWorker) GetID() string {
 	return aw.id
 }
@@ -68,7 +70,13 @@ func (aw *AgentWorker) GetHobbies() []string {
 	return aw.Hobbies
 }
 
-func (aw *AgentWorker) paintPixel(pixel painting.HexPixel) (err error) {
+func (aw *AgentWorker) register() {
+	(aw.Chat).Cin <- aw
+}
+
+// HTTP REQUEST
+
+func (aw *AgentWorker) paintPixelRequest(pixel painting.HexPixel) (err error) {
 	req := PaintPixelRequest{
 		PlaceID: aw.placeId,
 		UserID:  aw.id,
@@ -95,8 +103,4 @@ func (aw *AgentWorker) paintPixel(pixel painting.HexPixel) (err error) {
 
 	log.Printf("%s painted pixel (%d, %d) with color %s", aw.id, req.X, req.Y, req.Color)
 	return
-}
-
-func (aw *AgentWorker) register() {
-	(aw.Chat).Cin <- aw
 }

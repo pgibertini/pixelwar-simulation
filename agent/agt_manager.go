@@ -25,12 +25,7 @@ func NewAgentManager(id string, hobby string, chat *Chat, placeID string, url st
 	}
 }
 
-func (am *AgentManager) Start() {
-	am.register()
-	am.updateWorkers()
-	//am.ConvertImgToPixels("./images/BlueMario", 0, 0)
-	//am.sendPixelsToWorkers()
-}
+// GETTERS
 
 func (am *AgentManager) GetID() string {
 	return am.id
@@ -38,6 +33,13 @@ func (am *AgentManager) GetID() string {
 
 func (am *AgentManager) GetHobby() string {
 	return am.hobby
+}
+
+func (am *AgentManager) Start() {
+	am.register()
+	am.updateWorkers()
+	//am.LoadLayoutFromFile("./images/BlueMario", 0, 0)
+	//am.sendPixelsToWorkers()
 }
 
 func (am *AgentManager) register() {
@@ -79,7 +81,8 @@ func (am *AgentManager) updateWorkers() {
 	log.Printf("Manager %s now has %d workers", am.id, len(am.workers))
 }
 
-func (am *AgentManager) ConvertImgToPixels(imgPath string) {
+// LoadLayoutFromFile load a layout from a given file
+func (am *AgentManager) LoadLayoutFromFile(imgPath string) {
 	width, height, layout, err := painting.FileToLayout(imgPath)
 	if err != nil {
 		log.Fatal(err)
@@ -93,10 +96,12 @@ func (am *AgentManager) ConvertImgToPixels(imgPath string) {
 	// Convert the layout to a list of HexPixels
 }
 
+// AddPixelsToPlace add to pixels to the pixelsToPlace slice
 func (am *AgentManager) AddPixelsToPlace(p []painting.HexPixel) {
 	am.pixelsToPlace = append(am.pixelsToPlace, p...)
 }
 
+// divideWork divide the given slice of pixel to place in a number of slices corresponding to the number of workers
 func (am *AgentManager) divideWork() [][]painting.HexPixel {
 	unplacedPixels := am.GetUnplacedPixels()
 
@@ -128,43 +133,31 @@ func (am *AgentManager) DistributeWork() {
 	}
 }
 
-func (am *AgentManager) GetPixelsToPlace() {
-	req := GetCanvasRequest{
-		PlaceID: am.placeId,
-	}
-
-	// sérialisation de la requête
-	url := am.srvUrl + "/get_canvas"
-	data, _ := json.Marshal(req)
-
-	// envoi de la requête
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
-
-	// Read the response body
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
-		return
-	}
-
-	// Unmarshal the response into a NewPlaceResponse struct
-	var getCanvasResponse GetCanvasResponse
-	err = json.Unmarshal(body, &getCanvasResponse)
-	if err != nil {
-		fmt.Printf("Error unmarshalling response: %v\n", err)
-		return
-	}
-
-	//Regarde si des pixels sur le canvas ne sont pas comme ceux du modèle
-	for i := 0; i < am.Painting.Width; i++ {
-		for j := 0; j < am.Painting.Height; j++ {
-			if getCanvasResponse.Grid[i+am.Painting.XOffset][j+am.Painting.YOffset] != am.ImgLayout[i][j] {
-				am.pixelsToPlace = append(am.pixelsToPlace, painting.HexPixel{X: i, Y: j, Color: am.ImgLayout[i][j]})
+// GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
+func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
+	unplacedPixels := make([]painting.HexPixel, 0)
+	var wg sync.WaitGroup
+	for _, pixel := range am.pixelsToPlace {
+		wg.Add(1)
+		go func(x, y int, color painting.HexColor) {
+			defer wg.Done()
+			c, err := am.getPixelRequest(x, y)
+			if err != nil {
+				log.Printf("Error getting pixel color: %v\n", err)
+				return
 			}
-		}
+			if c != color {
+				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
+			}
+		}(pixel.X, pixel.Y, pixel.Color)
 	}
+	wg.Wait()
+	return unplacedPixels
 }
 
+// HTTP REQUESTS
+
+// getPixelRequest do a getPixel request to the server and return the response color
 func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err error) {
 	req := GetPixelRequest{
 		PlaceID: am.placeId,
@@ -210,24 +203,33 @@ func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err 
 	return getPixelResponse.Color, nil
 }
 
-// GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
-func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
-	unplacedPixels := make([]painting.HexPixel, 0)
-	var wg sync.WaitGroup
-	for _, pixel := range am.pixelsToPlace {
-		wg.Add(1)
-		go func(x, y int, color painting.HexColor) {
-			defer wg.Done()
-			c, err := am.getPixelRequest(x, y)
-			if err != nil {
-				log.Printf("Error getting pixel color: %v\n", err)
-				return
-			}
-			if c != color {
-				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
-			}
-		}(pixel.X, pixel.Y, pixel.Color)
+// getCanvasRequest do a getCanvas request to the server and return the response grid
+func (am *AgentManager) getCanvasRequest() (grid [][]painting.HexColor, err error) {
+	req := GetCanvasRequest{
+		PlaceID: am.placeId,
 	}
-	wg.Wait()
-	return unplacedPixels
+
+	// sérialisation de la requête
+	url := am.srvUrl + "/get_canvas"
+	data, _ := json.Marshal(req)
+
+	// envoi de la requête
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %v\n", err)
+		return
+	}
+
+	// Unmarshal the response into a NewPlaceResponse struct
+	var getCanvasResponse GetCanvasResponse
+	err = json.Unmarshal(body, &getCanvasResponse)
+	if err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return
+	}
+
+	return getCanvasResponse.Grid, nil
 }

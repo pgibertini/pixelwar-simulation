@@ -50,7 +50,7 @@ func main() {
 	// giving pixel to place
 	for _, m := range managers {
 		rand.Seed(time.Now().UnixNano())
-		m.ConvertImgToPixels(fmt.Sprintf("./images/%s", m.GetHobby()))
+		m.LoadLayoutFromFile(fmt.Sprintf("./images/%s", m.GetHobby()))
 		m.AddPixelsToPlace(painting.ImgLayoutToPixelList(m.ImgLayout, rand.Intn(size/2), rand.Intn(size/2)))
 	}
 
