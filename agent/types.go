@@ -23,13 +23,15 @@ type AgentWorker struct {
 }
 
 type AgentManager struct {
-	id              string
-	agts            []*AgentWorker
-	hobby           string
-	Chat            *Chat
-	bufferImgLayout []painting.HexPixel
-	Cin             chan interface{}
-	C_findWorkers   chan FindWorkersResponse
-	srvUrl          string
-	placeId         string
+	id            string
+	agts          []*AgentWorker
+	hobby         string
+	Chat          *Chat
+	Painting      painting.ManagerPainting
+	imgLayout     [][]painting.HexColor
+	pixelsToPlace []painting.HexPixel
+	Cin           chan interface{}
+	C_findWorkers chan FindWorkersResponse
+	srvUrl        string
+	placeId       string
 }
