@@ -93,41 +93,6 @@ func (am *AgentManager) ConvertImgToPixels(imgPath string) {
 	// Convert the layout to a list of HexPixels
 }
 
-func (am *AgentManager) sendPixelsToWorkers() {
-	numWorkers := len(am.workers)
-
-	start := 0
-	end := len(am.pixelsToPlace) - 1
-
-	intervalSize := (end + 1) / numWorkers
-	remainder := (end + 1) % numWorkers
-
-	var plusOne int
-	for i := 0; i < numWorkers; i++ {
-		if remainder != 0 {
-			remainder--
-			plusOne = 1
-		}
-
-		low := start + i*intervalSize
-		high := low + intervalSize - 1 + plusOne
-
-		fmt.Printf("interval: [%d, %d]\n", low, high)
-		fmt.Println("----- interval length: ", (high+1)-low)
-
-		start += plusOne
-		plusOne = 0
-
-		var pixelsToSend []painting.HexPixel
-		for j := low; j <= high; j++ {
-			pixelsToSend = append(pixelsToSend, am.pixelsToPlace[j])
-			//TODO : send pixels to workers channels
-		}
-		request := sendPixelsRequest{pixelsToSend, am.id}
-		am.workers[i].Cin <- request
-	}
-}
-
 func (am *AgentManager) AddPixelsToPlace(p []painting.HexPixel) {
 	am.pixelsToPlace = append(am.pixelsToPlace, p...)
 }
