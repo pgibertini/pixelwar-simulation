@@ -54,7 +54,7 @@ func main() {
 			}
 		}
 		painting.ShuffleHexPixels(pixels)
-		m.AddPixelsToBuffer(pixels)
+		m.AddPixelsToPlace(pixels)
 	}
 
 	// sending pixel to workers

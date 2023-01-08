@@ -14,17 +14,17 @@ import (
 	"sync"
 )
 
-func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat, placeID string, url string) *AgentManager {
+func NewAgentManager(id string, hobby string, chat *Chat, placeID string, url string) *AgentManager {
 	cin := make(chan interface{})
 	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
-		id:            idAgt,
-		hobby:         hobbyAgt,
-		Chat:          chat,
-		Cin:           cin,
-		C_findWorkers: cout,
-		placeId:       placeID,
-		srvUrl:        url,
+		id:      id,
+		hobby:   hobby,
+		Chat:    chat,
+		Cout:    cin,
+		Cin:     cout,
+		placeId: placeID,
+		srvUrl:  url,
 	}
 }
 
@@ -66,7 +66,7 @@ func (am *AgentManager) updateWorkers() {
 	go func() {
 		defer wg.Done()
 		fmt.Println("J'attends une réponse du serveur...")
-		resp = <-am.C_findWorkers
+		resp = <-am.Cin
 	}()
 
 	wg.Wait()
@@ -160,11 +160,11 @@ func (am *AgentManager) sendPixelsToWorkers() {
 			//TODO : send pixels to workers channels
 		}
 		request := sendPixelsRequest{pixelsToSend, am.id}
-		am.agts[i].Cout <- request
+		am.agts[i].Cin <- request
 	}
 }
 
-func (am *AgentManager) AddPixelsToBuffer(p []painting.HexPixel) {
+func (am *AgentManager) AddPixelsToPlace(p []painting.HexPixel) {
 	am.pixelsToPlace = append(am.pixelsToPlace, p...)
 }
 
@@ -192,7 +192,7 @@ func (am *AgentManager) DistributeWork() {
 	workList := am.divideWork()
 	for i, agt := range am.agts {
 		request := sendPixelsRequest{workList[i], am.id}
-		agt.Cout <- request
+		agt.Cin <- request
 		// TODO : have the channel saved directly
 	}
 }

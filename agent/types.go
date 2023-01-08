@@ -15,7 +15,7 @@ type AgentWorker struct {
 	id      string
 	tab     []painting.HexPixel
 	Hobbies []string
-	Cout    chan interface{}
+	Cin     chan interface{}
 	Chat    *Chat
 	srvUrl  string
 	placeId string
@@ -30,8 +30,8 @@ type AgentManager struct {
 	Painting      painting.ManagerPainting
 	imgLayout     [][]painting.HexColor
 	pixelsToPlace []painting.HexPixel
-	Cin           chan interface{}
-	C_findWorkers chan FindWorkersResponse
+	Cout          chan interface{}
+	Cin           chan FindWorkersResponse
 	srvUrl        string
 	placeId       string
 }

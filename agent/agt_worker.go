@@ -14,7 +14,7 @@ func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat, placeID strin
 	return &AgentWorker{
 		id:      idAgt,
 		Hobbies: hobbiesAgt,
-		Cout:    channel,
+		Cin:     channel,
 		Chat:    chat,
 		placeId: placeID,
 		srvUrl:  url,
@@ -27,7 +27,7 @@ func (aw *AgentWorker) Start() {
 	// écoute les instructions
 	go func() {
 		for {
-			value := <-aw.Cout
+			value := <-aw.Cin
 			switch value.(type) {
 			case sendPixelsRequest:
 				aw.mu.Lock()
@@ -45,7 +45,7 @@ func (aw *AgentWorker) Start() {
 			aw.mu.Lock()
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
-				aw.drawOnePixel(pixel)
+				aw.paintPixel(pixel)
 				aw.tab = aw.tab[1:]
 				//time.Sleep(time.Second)
 			}
@@ -62,7 +62,7 @@ func (aw *AgentWorker) GetHobbies() []string {
 	return aw.Hobbies
 }
 
-func (aw *AgentWorker) drawOnePixel(pixel painting.HexPixel) {
+func (aw *AgentWorker) paintPixel(pixel painting.HexPixel) {
 	req := PaintPixelRequest{
 		PlaceID: aw.placeId,
 		UserID:  aw.id,
