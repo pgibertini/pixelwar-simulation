@@ -137,28 +137,6 @@ func (am *AgentManager) DistributeWork() {
 	}
 }
 
-// GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
-//func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
-//	unplacedPixels := make([]painting.HexPixel, 0)
-//	var wg sync.WaitGroup
-//	for _, pixel := range am.pixelsToPlace {
-//		wg.Add(1)
-//		go func(x, y int, color painting.HexColor) {
-//			defer wg.Done()
-//			c, err := am.getPixelRequest(x, y)
-//			if err != nil {
-//				log.Printf("Error getting pixel color: %v\n", err)
-//				return
-//			}
-//			if c != color {
-//				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
-//			}
-//		}(pixel.X, pixel.Y, pixel.Color)
-//	}
-//	wg.Wait()
-//	return unplacedPixels
-//}
-
 // GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getCanvasRequest method
 func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
 	unplacedPixels := make([]painting.HexPixel, 0)
@@ -176,6 +154,28 @@ func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
 			unplacedPixels = append(unplacedPixels, pixel)
 		}
 	}
+	return unplacedPixels
+}
+
+// GetUnplacedPixelsOneByOne return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
+func (am *AgentManager) GetUnplacedPixelsOneByOne() []painting.HexPixel {
+	unplacedPixels := make([]painting.HexPixel, 0)
+	var wg sync.WaitGroup
+	for _, pixel := range am.pixelsToPlace {
+		wg.Add(1)
+		go func(x, y int, color painting.HexColor) {
+			defer wg.Done()
+			c, err := am.getPixelRequest(x, y)
+			if err != nil {
+				log.Printf("Error getting pixel color: %v\n", err)
+				return
+			}
+			if c != color {
+				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
+			}
+		}(pixel.X, pixel.Y, pixel.Color)
+	}
+	wg.Wait()
 	return unplacedPixels
 }
 

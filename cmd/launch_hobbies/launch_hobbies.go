@@ -11,9 +11,10 @@ import (
 func main() {
 	// PARAMETERS
 	url := "http://localhost:5555"
+	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger"}
 	nWorkers := 100
 	size := 500
-	cooldown := 10
+	cooldown := 5
 
 	// create a new place
 	placeID := agt.CreateNewPlace(url, size, size, cooldown)
@@ -23,7 +24,6 @@ func main() {
 	myChat := agt.NewChat(placeID, url, cooldown, size, size)
 	go myChat.Start()
 
-	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger"}
 	var managers []*agt.AgentManager
 	var workers []*agt.AgentWorker
 
