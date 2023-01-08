@@ -197,3 +197,50 @@ func (am *AgentManager) GetPixelsToPlace() {
 		}
 	}
 }
+
+func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err error) {
+	req := GetPixelRequest{
+		PlaceID: am.placeId,
+		X:       x,
+		Y:       y,
+	}
+
+	// sérialisation de la requête
+	url := am.srvUrl + "/paint_pixel"
+	data, err := json.Marshal(req)
+	if err != nil {
+		return
+	}
+
+	// envoi de la requête
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+
+	// traitement de la réponse
+	if err != nil {
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("[%d] %s", resp.StatusCode, resp.Status)
+		return
+	}
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v\n", err)
+		return
+	}
+
+	// Unmarshal the response into a NewPlaceResponse struct
+	var getPixelResponse GetPixelResponse
+	err = json.Unmarshal(body, &getPixelResponse)
+	if err != nil {
+		log.Printf("Error unmarshalling response: %v\n", err)
+		return
+	}
+
+	return getPixelResponse.Color, nil
+}
+
+func (am *AgentManager) CheckPixelToPlace()
