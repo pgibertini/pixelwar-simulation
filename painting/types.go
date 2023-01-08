@@ -33,3 +33,11 @@ type HexPixel struct {
 	Y     int      `json:"y"`
 	Color HexColor `json:"c"`
 }
+
+type ManagerPainting struct {
+	YOffset int
+	XOffset int
+	Height  int
+	Width   int
+	ImgPath string
+}

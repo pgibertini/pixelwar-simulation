@@ -2,10 +2,15 @@ package agent
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
+	"io"
 	"log"
+	"net/http"
 	"os"
+	"strconv"
 	"sync"
 )
 
@@ -24,9 +29,9 @@ func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat, placeID string, 
 }
 
 func (am *AgentManager) Start() {
-	am.register()
-	am.updateWorkers()
-	//am.convertImgToPixels("./usa", 0, 0)
+	//am.register()
+	//am.updateWorkers()
+	am.convertImgToPixels("./usa", 0, 0)
 	//am.sendPixelsToWorkers()
 }
 
@@ -91,21 +96,33 @@ func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offs
 	scanner := bufio.NewScanner(f)
 	scanner.Split(bufio.ScanWords)
 
-	for scanner.Scan() {
-		str := scanner.Text()
-		if str != "!" {
-			//tmpPixel := painting.NewPixelLocal(painting.StringToColor(str))
-			//ptp := painting.NewPixelToPlaceLocal(tmpPixel, x_offset, y_offset)
-			ptp := painting.HexPixel{
-				X:     x_offset,
-				Y:     y_offset,
-				Color: painting.HexColor(str),
-			}
-			am.bufferImgLayout = append(am.bufferImgLayout, ptp)
-			x_offset++
-		} else {
-			y_offset++
+	//Regarde la première ligne pour obtenir les dimensions du tableau
+	scanner.Scan()
+	str := scanner.Text()
+	width, err := strconv.Atoi(str)
+	scanner.Scan()
+	str = scanner.Text()
+	height, err := strconv.Atoi(str)
+
+	am.Painting.Width = width
+	am.Painting.Height = height
+	am.imgLayout = make([][]painting.HexColor, height)
+
+	for i := 0; i < height; i++ {
+		am.imgLayout[i] = make([]painting.HexColor, width)
+		for j := 0; j < width; j++ {
+			scanner.Scan()
+			str = scanner.Text()
+			am.imgLayout[i][j] = painting.HexColor(str)
 		}
+	}
+
+	println(am.Painting.Width, ";", am.Painting.Height)
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			print(am.imgLayout[i][j], " ")
+		}
+		println()
 	}
 }
 
@@ -113,7 +130,7 @@ func (am *AgentManager) sendPixelsToWorkers() {
 	numWorkers := len(am.agts)
 
 	start := 0
-	end := len(am.bufferImgLayout) - 1
+	end := len(am.pixelsToPlace) - 1
 
 	intervalSize := (end + 1) / numWorkers
 	remainder := (end + 1) % numWorkers
@@ -136,7 +153,7 @@ func (am *AgentManager) sendPixelsToWorkers() {
 
 		var pixelsToSend []painting.HexPixel
 		for j := low; j <= high; j++ {
-			pixelsToSend = append(pixelsToSend, am.bufferImgLayout[j])
+			pixelsToSend = append(pixelsToSend, am.pixelsToPlace[j])
 			//TODO : send pixels to workers channels
 		}
 		request := sendPixelsRequest{pixelsToSend, am.id}
@@ -145,13 +162,13 @@ func (am *AgentManager) sendPixelsToWorkers() {
 }
 
 func (am *AgentManager) AddPixelsToBuffer(p []painting.HexPixel) {
-	am.bufferImgLayout = append(am.bufferImgLayout, p...)
+	am.pixelsToPlace = append(am.pixelsToPlace, p...)
 }
 
 func (am *AgentManager) divideWork() [][]painting.HexPixel {
 	numWorkers := len(am.agts)
-	workPerWorker := len(am.bufferImgLayout) / numWorkers
-	remainder := len(am.bufferImgLayout) % numWorkers
+	workPerWorker := len(am.pixelsToPlace) / numWorkers
+	remainder := len(am.pixelsToPlace) % numWorkers
 
 	workList := make([][]painting.HexPixel, numWorkers)
 	for i := 0; i < numWorkers; i++ {
@@ -162,7 +179,7 @@ func (am *AgentManager) divideWork() [][]painting.HexPixel {
 			endIndex += remainder
 		}
 
-		workList[i] = am.bufferImgLayout[startIndex:endIndex]
+		workList[i] = am.pixelsToPlace[startIndex:endIndex]
 	}
 
 	return workList
@@ -174,5 +191,42 @@ func (am *AgentManager) DistributeWork() {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cout <- request
 		// TODO : have the channel saved directly
+	}
+}
+
+func (am *AgentManager) GetPixelsToPlace() {
+	req := GetCanvasRequest{
+		PlaceID: am.placeId,
+	}
+
+	// sérialisation de la requête
+	url := am.srvUrl + "/get_canvas"
+	data, _ := json.Marshal(req)
+
+	// envoi de la requête
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %v\n", err)
+		return
+	}
+
+	// Unmarshal the response into a NewPlaceResponse struct
+	var getCanvasResponse GetCanvasResponse
+	err = json.Unmarshal(body, &getCanvasResponse)
+	if err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return
+	}
+
+	//Regarde si des pixels sur le canvas ne sont pas comme ceux du modèle
+	for i := 0; i < am.Painting.Width; i++ {
+		for j := 0; j < am.Painting.Height; j++ {
+			if getCanvasResponse.Grid[i+am.Painting.XOffset][j+am.Painting.YOffset] != am.imgLayout[i][j] {
+				am.pixelsToPlace = append(am.pixelsToPlace, painting.HexPixel{X: i, Y: j, Color: am.imgLayout[i][j]})
+			}
+		}
 	}
 }
