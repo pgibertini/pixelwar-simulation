@@ -7,17 +7,19 @@ import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
+	"time"
 )
 
-func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat, placeID string, url string) *AgentWorker {
+func NewAgentWorker(id string, hobbies []string, chat *Chat, placeID string, url string, cooldown int) *AgentWorker {
 	channel := make(chan interface{})
 	return &AgentWorker{
-		id:      idAgt,
-		Hobbies: hobbiesAgt,
-		Cin:     channel,
-		Chat:    chat,
-		placeId: placeID,
-		srvUrl:  url,
+		id:       id,
+		Hobbies:  hobbies,
+		Cin:      channel,
+		Chat:     chat,
+		placeId:  placeID,
+		srvUrl:   url,
+		cooldown: cooldown,
 	}
 }
 
@@ -45,9 +47,13 @@ func (aw *AgentWorker) Start() {
 			aw.mu.Lock()
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
-				aw.paintPixel(pixel)
-				aw.tab = aw.tab[1:]
-				//time.Sleep(time.Second)
+				err := aw.paintPixel(pixel)
+				if err == nil {
+					aw.tab = aw.tab[1:]
+				} else {
+					log.Println(err)
+				}
+				time.Sleep(time.Second * time.Duration(aw.cooldown))
 			}
 			aw.mu.Unlock()
 		}
@@ -62,7 +68,7 @@ func (aw *AgentWorker) GetHobbies() []string {
 	return aw.Hobbies
 }
 
-func (aw *AgentWorker) paintPixel(pixel painting.HexPixel) {
+func (aw *AgentWorker) paintPixel(pixel painting.HexPixel) (err error) {
 	req := PaintPixelRequest{
 		PlaceID: aw.placeId,
 		UserID:  aw.id,
@@ -80,7 +86,6 @@ func (aw *AgentWorker) paintPixel(pixel painting.HexPixel) {
 
 	// traitement de la réponse
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	if resp.StatusCode != http.StatusOK {

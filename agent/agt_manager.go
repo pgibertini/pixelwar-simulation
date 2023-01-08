@@ -57,7 +57,7 @@ func (am *AgentManager) updateWorkers() {
 	req := FindWorkersRequest{am.id, am.hobby}
 	(am.Chat).Cin <- req
 
-	fmt.Println("Voici ma liste initiale de workers : ", am.workers)
+	//fmt.Println("Voici ma liste initiale de workers : ", am.workers)
 
 	var wg sync.WaitGroup
 	var resp FindWorkersResponse
@@ -65,12 +65,12 @@ func (am *AgentManager) updateWorkers() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		fmt.Println("J'attends une réponse du serveur...")
+		//fmt.Println("J'attends une réponse du serveur...")
 		resp = <-am.Cin
 	}()
 
 	wg.Wait()
-	fmt.Println("Réponse reçue ! : ", resp)
+	//fmt.Println("Réponse reçue ! : ", resp)
 
 	for _, v := range resp.Workers {
 		if exists(am.workers, v.id) == -1 {
@@ -78,8 +78,8 @@ func (am *AgentManager) updateWorkers() {
 		}
 	}
 
-	fmt.Println("Voici ma liste finale de workers : ", am.workers)
-
+	//fmt.Println("Voici ma liste finale de workers : ", am.workers)
+	log.Printf("Manager %s now has %d workers", am.id, len(am.workers))
 }
 
 // Shall we specify the offset right now or shall we make another function which adds the offset?

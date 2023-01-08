@@ -12,14 +12,15 @@ type Chat struct {
 }
 
 type AgentWorker struct {
-	id      string
-	tab     []painting.HexPixel
-	Hobbies []string
-	Cin     chan interface{}
-	Chat    *Chat
-	srvUrl  string
-	placeId string
-	mu      sync.Mutex
+	id       string
+	tab      []painting.HexPixel
+	Hobbies  []string
+	Cin      chan interface{}
+	Chat     *Chat
+	srvUrl   string
+	placeId  string
+	cooldown int
+	mu       sync.Mutex
 }
 
 type AgentManager struct {

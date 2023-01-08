@@ -13,9 +13,10 @@ func main() {
 	url := "http://localhost:8080"
 	nWorkers := 10
 	size := 1000
+	cooldown := 10
 
 	// create a new place
-	placeID := agt.CreateNewPlace(url, size, size)
+	placeID := agt.CreateNewPlace(url, size, size, cooldown)
 	log.Printf("Playing on %s", placeID)
 
 	// chat for agents discussion
@@ -31,7 +32,7 @@ func main() {
 		managers = append(managers, agt.NewAgentManager(strconv.Itoa(i), h, myChat, placeID, url))
 
 		for j := 0; j < nWorkers; j++ {
-			workers = append(workers, agt.NewAgentWorker(h+strconv.Itoa(j), []string{h}, myChat, placeID, url))
+			workers = append(workers, agt.NewAgentWorker(h+strconv.Itoa(j), []string{h}, myChat, placeID, url, cooldown))
 		}
 	}
 

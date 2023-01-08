@@ -6,7 +6,7 @@ import (
 )
 
 func NewChat() *Chat {
-	cin := make(chan (interface{}))
+	cin := make(chan interface{})
 	return &Chat{
 		Cin: cin,
 	}
@@ -34,12 +34,12 @@ func (srv *Chat) Start() {
 }
 
 func (srv *Chat) registerManager(am *AgentManager) {
-	fmt.Printf("Registering a manager. ID = %s\n", am.GetID())
+	log.Printf("Registering a manager: ID=%s\n", am.GetID())
 	srv.Ams = append(srv.Ams, am)
 }
 
 func (srv *Chat) registerWorker(aw *AgentWorker) {
-	fmt.Printf("Registering a worker. ID = %s\n", aw.GetID())
+	log.Printf("Registering a worker: ID=%s\n", aw.GetID())
 	srv.Aws = append(srv.Aws, aw)
 }
 

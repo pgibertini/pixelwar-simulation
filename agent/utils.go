@@ -50,16 +50,17 @@ func MakeRandomSliceOfHobbies(hobbies []string) (result []string) {
 	return
 }
 
-func CreateNewPlace(url string, height, width int) (placeID string) {
+func CreateNewPlace(url string, height, width, cooldown int) (placeID string) {
 	url = url + "/new_place"
 
 	// Send a new_place request to the server
 	resp, err := http.Post(
 		url,
 		"application/json",
-		strings.NewReader(fmt.Sprintf(`{"height":%d,"width":%d}`,
+		strings.NewReader(fmt.Sprintf(`{"height":%d,"width":%d,"cooldown":%d}`,
 			height,
 			width,
+			cooldown,
 		)))
 
 	// Read the response body
