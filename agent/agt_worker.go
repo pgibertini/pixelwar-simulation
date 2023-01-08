@@ -10,16 +10,13 @@ import (
 	"time"
 )
 
-func NewAgentWorker(id string, hobbies []string, chat *Chat, placeID string, url string, cooldown int) *AgentWorker {
+func NewAgentWorker(id string, hobbies []string, chat *Chat) *AgentWorker {
 	channel := make(chan interface{})
 	return &AgentWorker{
-		id:       id,
-		Hobbies:  hobbies,
-		Cin:      channel,
-		Chat:     chat,
-		placeId:  placeID,
-		srvUrl:   url,
-		cooldown: cooldown,
+		id:      id,
+		Hobbies: hobbies,
+		Cin:     channel,
+		Chat:    chat,
 	}
 }
 
@@ -53,7 +50,7 @@ func (aw *AgentWorker) Start() {
 				} else {
 					log.Println(err)
 				}
-				time.Sleep(time.Second * time.Duration(aw.cooldown))
+				time.Sleep(time.Second * time.Duration(aw.Chat.GetCooldown()))
 			}
 			aw.mu.Unlock()
 		}
@@ -78,7 +75,7 @@ func (aw *AgentWorker) register() {
 
 func (aw *AgentWorker) paintPixelRequest(pixel painting.HexPixel) (err error) {
 	req := PaintPixelRequest{
-		PlaceID: aw.placeId,
+		PlaceID: aw.Chat.GetPlaceID(),
 		UserID:  aw.id,
 		X:       pixel.X,
 		Y:       pixel.Y,
@@ -86,7 +83,7 @@ func (aw *AgentWorker) paintPixelRequest(pixel painting.HexPixel) (err error) {
 	}
 
 	// sérialisation de la requête
-	url := aw.srvUrl + "/paint_pixel"
+	url := aw.Chat.GetURL() + "/paint_pixel"
 	data, _ := json.Marshal(req)
 
 	// envoi de la requête

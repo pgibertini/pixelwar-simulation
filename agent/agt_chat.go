@@ -5,10 +5,13 @@ import (
 	"log"
 )
 
-func NewChat() *Chat {
+func NewChat(placeID string, url string, cooldown int) *Chat {
 	cin := make(chan interface{})
 	return &Chat{
-		Cin: cin,
+		Cin:      cin,
+		placeId:  placeID,
+		srvUrl:   url,
+		cooldown: cooldown,
 	}
 }
 
@@ -53,10 +56,24 @@ func (srv *Chat) findWorkersRespond(req FindWorkersRequest) FindWorkersResponse 
 	return resp
 }
 
+// GETTERS
+
 func (srv *Chat) GetManagers() []*AgentManager {
 	return srv.Ams
 }
 
 func (srv *Chat) GetWorkers() []*AgentWorker {
 	return srv.Aws
+}
+
+func (srv *Chat) GetURL() string {
+	return srv.srvUrl
+}
+
+func (srv *Chat) GetPlaceID() string {
+	return srv.placeId
+}
+
+func (srv *Chat) GetCooldown() int {
+	return srv.cooldown
 }

@@ -11,17 +11,15 @@ import (
 	"sync"
 )
 
-func NewAgentManager(id string, hobby string, chat *Chat, placeID string, url string) *AgentManager {
+func NewAgentManager(id string, hobby string, chat *Chat) *AgentManager {
 	cin := make(chan interface{})
 	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
-		id:      id,
-		hobby:   hobby,
-		Chat:    chat,
-		Cout:    cin,
-		Cin:     cout,
-		placeId: placeID,
-		srvUrl:  url,
+		id:    id,
+		hobby: hobby,
+		Chat:  chat,
+		Cout:  cin,
+		Cin:   cout,
 	}
 }
 
@@ -102,12 +100,10 @@ func (am *AgentManager) AddPixelsToPlace(p []painting.HexPixel) {
 }
 
 // divideWork divide the given slice of pixel to place in a number of slices corresponding to the number of workers
-func (am *AgentManager) divideWork() [][]painting.HexPixel {
-	unplacedPixels := am.GetUnplacedPixels()
-
+func (am *AgentManager) divideWork(pixels []painting.HexPixel) [][]painting.HexPixel {
 	numWorkers := len(am.workers)
-	workPerWorker := len(unplacedPixels) / numWorkers
-	remainder := len(unplacedPixels) % numWorkers
+	workPerWorker := len(pixels) / numWorkers
+	remainder := len(pixels) % numWorkers
 
 	workList := make([][]painting.HexPixel, numWorkers)
 	for i := 0; i < numWorkers; i++ {
@@ -118,7 +114,7 @@ func (am *AgentManager) divideWork() [][]painting.HexPixel {
 			endIndex += remainder
 		}
 
-		workList[i] = unplacedPixels[startIndex:endIndex]
+		workList[i] = pixels[startIndex:endIndex]
 	}
 
 	return workList
@@ -126,7 +122,7 @@ func (am *AgentManager) divideWork() [][]painting.HexPixel {
 
 // DistributeWork distribute the list of pixel to place that are not already placed
 func (am *AgentManager) DistributeWork() {
-	workList := am.divideWork()
+	workList := am.divideWork(am.GetUnplacedPixels())
 	for i, agt := range am.workers {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cin <- request
@@ -160,13 +156,13 @@ func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
 // getPixelRequest do a getPixel request to the server and return the response color
 func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err error) {
 	req := GetPixelRequest{
-		PlaceID: am.placeId,
+		PlaceID: am.Chat.GetPlaceID(),
 		X:       x,
 		Y:       y,
 	}
 
 	// sérialisation de la requête
-	url := am.srvUrl + "/get_pixel"
+	url := am.Chat.GetURL() + "/get_pixel"
 	data, err := json.Marshal(req)
 	if err != nil {
 		return
@@ -206,11 +202,11 @@ func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err 
 // getCanvasRequest do a getCanvas request to the server and return the response grid
 func (am *AgentManager) getCanvasRequest() (grid [][]painting.HexColor, err error) {
 	req := GetCanvasRequest{
-		PlaceID: am.placeId,
+		PlaceID: am.Chat.GetPlaceID(),
 	}
 
 	// sérialisation de la requête
-	url := am.srvUrl + "/get_canvas"
+	url := am.Chat.GetURL() + "/get_canvas"
 	data, _ := json.Marshal(req)
 
 	// envoi de la requête
