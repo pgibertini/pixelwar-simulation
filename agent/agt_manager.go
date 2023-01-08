@@ -31,7 +31,7 @@ func NewAgentManager(idAgt string, hobbyAgt string, chat *Chat, placeID string, 
 func (am *AgentManager) Start() {
 	//am.register()
 	//am.updateWorkers()
-	am.convertImgToPixels("./usa", 0, 0)
+	am.convertImgToPixels("./images/BlueMario", 0, 0)
 	//am.sendPixelsToWorkers()
 }
 
@@ -104,11 +104,14 @@ func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offs
 	str = scanner.Text()
 	height, err := strconv.Atoi(str)
 
+	// Get the painting dimensions
 	am.Painting.Width = width
 	am.Painting.Height = height
+	// Create the 2D array
 	am.imgLayout = make([][]painting.HexColor, height)
 
 	for i := 0; i < height; i++ {
+		// Create each row of the 2D array
 		am.imgLayout[i] = make([]painting.HexColor, width)
 		for j := 0; j < width; j++ {
 			scanner.Scan()
