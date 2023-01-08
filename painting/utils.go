@@ -76,11 +76,11 @@ func FileToLayout(filePath string) (int, int, [][]HexColor, error) {
 	}
 
 	// Create the layout
-	layout := make([][]HexColor, height)
-	for i := 0; i < height; i++ {
+	layout := make([][]HexColor, width)
+	for i := 0; i < width; i++ {
 		// Create each row of the layout
-		layout[i] = make([]HexColor, width)
-		for j := 0; j < width; j++ {
+		layout[i] = make([]HexColor, height)
+		for j := 0; j < height; j++ {
 			scanner.Scan()
 			str = scanner.Text()
 			layout[i][j] = HexColor(str)

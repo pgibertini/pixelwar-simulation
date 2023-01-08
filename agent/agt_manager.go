@@ -152,12 +152,12 @@ func (am *AgentManager) divideWork() [][]painting.HexPixel {
 	return workList
 }
 
+// DistributeWork distribute the list of pixel to place that are not already placed
 func (am *AgentManager) DistributeWork() {
 	workList := am.divideWork()
 	for i, agt := range am.workers {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cin <- request
-		// TODO : have the channel saved directly can be better
 	}
 }
 
@@ -243,4 +243,18 @@ func (am *AgentManager) getPixelRequest(x, y int) (color painting.HexColor, err 
 	return getPixelResponse.Color, nil
 }
 
-func (am *AgentManager) CheckPixelToPlace()
+// GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
+func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
+	unplacedPixels := make([]painting.HexPixel, 0)
+	for _, pixel := range am.pixelsToPlace {
+		color, err := am.getPixelRequest(pixel.X, pixel.Y)
+		if err != nil {
+			log.Printf("Error getting pixel color: %v\n", err)
+			continue
+		}
+		if color != pixel.Color {
+			unplacedPixels = append(unplacedPixels, pixel)
+		}
+	}
+	return unplacedPixels
+}
