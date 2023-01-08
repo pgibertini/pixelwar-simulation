@@ -24,7 +24,7 @@ type AgentWorker struct {
 
 type AgentManager struct {
 	id            string
-	agts          []*AgentWorker
+	workers       []*AgentWorker
 	hobby         string
 	Chat          *Chat
 	Painting      painting.ManagerPainting

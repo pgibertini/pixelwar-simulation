@@ -29,9 +29,9 @@ func NewAgentManager(id string, hobby string, chat *Chat, placeID string, url st
 }
 
 func (am *AgentManager) Start() {
-	//am.register()
-	//am.updateWorkers()
-	am.convertImgToPixels("./images/BlueMario", 0, 0)
+	am.register()
+	am.updateWorkers()
+	//am.convertImgToPixels("./images/BlueMario", 0, 0)
 	//am.sendPixelsToWorkers()
 }
 
@@ -49,15 +49,15 @@ func (am *AgentManager) register() {
 
 func (am *AgentManager) updateWorkers() {
 	// Not sure of this. Can AgentWorkers change their hobbies?
-	for k, v := range am.agts {
+	for k, v := range am.workers {
 		if !ContainsHobby(v.Hobbies, am.hobby) {
-			am.agts = remove(am.agts, k)
+			am.workers = remove(am.workers, k)
 		}
 	}
 	req := FindWorkersRequest{am.id, am.hobby}
 	(am.Chat).Cin <- req
 
-	fmt.Println("Voici ma liste initiale de workers : ", am.agts)
+	fmt.Println("Voici ma liste initiale de workers : ", am.workers)
 
 	var wg sync.WaitGroup
 	var resp FindWorkersResponse
@@ -73,12 +73,12 @@ func (am *AgentManager) updateWorkers() {
 	fmt.Println("Réponse reçue ! : ", resp)
 
 	for _, v := range resp.Workers {
-		if exists(am.agts, v.id) == -1 {
-			am.agts = append(am.agts, v)
+		if exists(am.workers, v.id) == -1 {
+			am.workers = append(am.workers, v)
 		}
 	}
 
-	fmt.Println("Voici ma liste finale de workers : ", am.agts)
+	fmt.Println("Voici ma liste finale de workers : ", am.workers)
 
 }
 
@@ -130,7 +130,7 @@ func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offs
 }
 
 func (am *AgentManager) sendPixelsToWorkers() {
-	numWorkers := len(am.agts)
+	numWorkers := len(am.workers)
 
 	start := 0
 	end := len(am.pixelsToPlace) - 1
@@ -160,7 +160,7 @@ func (am *AgentManager) sendPixelsToWorkers() {
 			//TODO : send pixels to workers channels
 		}
 		request := sendPixelsRequest{pixelsToSend, am.id}
-		am.agts[i].Cin <- request
+		am.workers[i].Cin <- request
 	}
 }
 
@@ -169,7 +169,7 @@ func (am *AgentManager) AddPixelsToPlace(p []painting.HexPixel) {
 }
 
 func (am *AgentManager) divideWork() [][]painting.HexPixel {
-	numWorkers := len(am.agts)
+	numWorkers := len(am.workers)
 	workPerWorker := len(am.pixelsToPlace) / numWorkers
 	remainder := len(am.pixelsToPlace) % numWorkers
 
@@ -190,10 +190,10 @@ func (am *AgentManager) divideWork() [][]painting.HexPixel {
 
 func (am *AgentManager) DistributeWork() {
 	workList := am.divideWork()
-	for i, agt := range am.agts {
+	for i, agt := range am.workers {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cin <- request
-		// TODO : have the channel saved directly
+		// TODO : have the channel saved directly can be better
 	}
 }
 

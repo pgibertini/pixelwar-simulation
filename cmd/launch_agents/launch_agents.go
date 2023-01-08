@@ -11,7 +11,7 @@ import (
 func main() {
 	// PARAMETERS
 	url := "http://localhost:8080"
-	nWorkers := 100
+	nWorkers := 10
 	size := 1000
 
 	// create a new place
