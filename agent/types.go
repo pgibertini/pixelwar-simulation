@@ -29,7 +29,7 @@ type AgentManager struct {
 	hobby         string
 	Chat          *Chat
 	Painting      painting.ManagerPainting
-	imgLayout     [][]painting.HexColor
+	ImgLayout     [][]painting.HexColor
 	pixelsToPlace []painting.HexPixel
 	Cout          chan interface{}
 	Cin           chan FindWorkersResponse

@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,8 +8,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"sync"
 )
 
@@ -31,7 +28,7 @@ func NewAgentManager(id string, hobby string, chat *Chat, placeID string, url st
 func (am *AgentManager) Start() {
 	am.register()
 	am.updateWorkers()
-	//am.convertImgToPixels("./images/BlueMario", 0, 0)
+	//am.ConvertImgToPixels("./images/BlueMario", 0, 0)
 	//am.sendPixelsToWorkers()
 }
 
@@ -82,51 +79,18 @@ func (am *AgentManager) updateWorkers() {
 	log.Printf("Manager %s now has %d workers", am.id, len(am.workers))
 }
 
-// Shall we specify the offset right now or shall we make another function which adds the offset?
-// Because at this point, the manager does not know the size of the image and where to place it
-func (am *AgentManager) convertImgToPixels(img_path string, x_offset int, y_offset int) {
-	f, err := os.Open(img_path)
-
+func (am *AgentManager) ConvertImgToPixels(imgPath string) {
+	width, height, layout, err := painting.FileToLayout(imgPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanWords)
-
-	//Regarde la première ligne pour obtenir les dimensions du tableau
-	scanner.Scan()
-	str := scanner.Text()
-	width, err := strconv.Atoi(str)
-	scanner.Scan()
-	str = scanner.Text()
-	height, err := strconv.Atoi(str)
-
-	// Get the painting dimensions
+	// Set the painting dimensions
 	am.Painting.Width = width
 	am.Painting.Height = height
-	// Create the 2D array
-	am.imgLayout = make([][]painting.HexColor, height)
-
-	for i := 0; i < height; i++ {
-		// Create each row of the 2D array
-		am.imgLayout[i] = make([]painting.HexColor, width)
-		for j := 0; j < width; j++ {
-			scanner.Scan()
-			str = scanner.Text()
-			am.imgLayout[i][j] = painting.HexColor(str)
-		}
-	}
-
-	println(am.Painting.Width, ";", am.Painting.Height)
-	for i := 0; i < height; i++ {
-		for j := 0; j < width; j++ {
-			print(am.imgLayout[i][j], " ")
-		}
-		println()
-	}
+	// Set the layout
+	am.ImgLayout = layout
+	// Convert the layout to a list of HexPixels
 }
 
 func (am *AgentManager) sendPixelsToWorkers() {
@@ -227,8 +191,8 @@ func (am *AgentManager) GetPixelsToPlace() {
 	//Regarde si des pixels sur le canvas ne sont pas comme ceux du modèle
 	for i := 0; i < am.Painting.Width; i++ {
 		for j := 0; j < am.Painting.Height; j++ {
-			if getCanvasResponse.Grid[i+am.Painting.XOffset][j+am.Painting.YOffset] != am.imgLayout[i][j] {
-				am.pixelsToPlace = append(am.pixelsToPlace, painting.HexPixel{X: i, Y: j, Color: am.imgLayout[i][j]})
+			if getCanvasResponse.Grid[i+am.Painting.XOffset][j+am.Painting.YOffset] != am.ImgLayout[i][j] {
+				am.pixelsToPlace = append(am.pixelsToPlace, painting.HexPixel{X: i, Y: j, Color: am.ImgLayout[i][j]})
 			}
 		}
 	}
