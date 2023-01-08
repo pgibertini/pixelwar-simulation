@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// PARAMETERS
-	url := "http://localhost:8080"
+	url := "http://localhost:5555"
 
 	// Open the CSV file
 	// Get the full dataset at https://www.reddit.com/r/place/comments/txvk2d/rplace_datasets_april_fools_2022/

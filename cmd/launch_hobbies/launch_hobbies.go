@@ -10,10 +10,10 @@ import (
 
 func main() {
 	// PARAMETERS
-	url := "http://localhost:8080"
+	url := "http://localhost:5555"
 	nWorkers := 100
 	size := 500
-	cooldown := 5
+	cooldown := 10
 
 	// create a new place
 	placeID := agt.CreateNewPlace(url, size, size, cooldown)

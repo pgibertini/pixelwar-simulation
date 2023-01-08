@@ -39,7 +39,7 @@ func (am *AgentManager) Start() {
 	rand.Seed(time.Now().UnixNano())
 	am.register()
 	am.updateWorkers()
-	am.LoadLayoutFromFile(fmt.Sprintf("./images/%s", am.GetHobby()))
+	am.LoadLayoutFromFile(fmt.Sprintf("images/%s", am.GetHobby()))
 	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
 		am.ImgLayout,
 		rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
@@ -138,24 +138,44 @@ func (am *AgentManager) DistributeWork() {
 }
 
 // GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getPixelRequest method
+//func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
+//	unplacedPixels := make([]painting.HexPixel, 0)
+//	var wg sync.WaitGroup
+//	for _, pixel := range am.pixelsToPlace {
+//		wg.Add(1)
+//		go func(x, y int, color painting.HexColor) {
+//			defer wg.Done()
+//			c, err := am.getPixelRequest(x, y)
+//			if err != nil {
+//				log.Printf("Error getting pixel color: %v\n", err)
+//				return
+//			}
+//			if c != color {
+//				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
+//			}
+//		}(pixel.X, pixel.Y, pixel.Color)
+//	}
+//	wg.Wait()
+//	return unplacedPixels
+//}
+
+// GetUnplacedPixels return the slice of am.PixelToPlace that are not already placed, using getCanvasRequest method
 func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
 	unplacedPixels := make([]painting.HexPixel, 0)
-	var wg sync.WaitGroup
-	for _, pixel := range am.pixelsToPlace {
-		wg.Add(1)
-		go func(x, y int, color painting.HexColor) {
-			defer wg.Done()
-			c, err := am.getPixelRequest(x, y)
-			if err != nil {
-				log.Printf("Error getting pixel color: %v\n", err)
-				return
-			}
-			if c != color {
-				unplacedPixels = append(unplacedPixels, painting.HexPixel{X: x, Y: y, Color: color})
-			}
-		}(pixel.X, pixel.Y, pixel.Color)
+
+	// Get the current state of the canvas
+	grid, err := am.getCanvasRequest()
+	if err != nil {
+		log.Printf("Error getting canvas: %v\n", err)
+		return unplacedPixels
 	}
-	wg.Wait()
+
+	// Check which pixels in pixelsToPlace have not been placed on the canvas
+	for _, pixel := range am.pixelsToPlace {
+		if grid[pixel.Y][pixel.X] != pixel.Color {
+			unplacedPixels = append(unplacedPixels, pixel)
+		}
+	}
 	return unplacedPixels
 }
 

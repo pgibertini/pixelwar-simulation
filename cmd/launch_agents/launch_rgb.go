@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// PARAMETERS
-	url := "http://localhost:8080"
+	url := "http://localhost:5555"
 	nWorkers := 10
 	size := 1000
 	cooldown := 10
