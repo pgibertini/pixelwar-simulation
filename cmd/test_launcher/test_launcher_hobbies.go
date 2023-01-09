@@ -9,6 +9,5 @@ func main() {
 		"random",
 		5,
 		500,
-		1,
-		true)
+		1)
 }

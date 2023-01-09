@@ -2,7 +2,6 @@ package launcher
 
 import (
 	"bufio"
-	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"log"
 	"math/rand"
@@ -12,7 +11,7 @@ import (
 	"time"
 )
 
-func LaunchPixelWar(nbWorkerPerManager string, cooldown, size int, conquestValue float64, modeScript bool) (placeID string) {
+func LaunchPixelWar(nbWorkerPerManager string, cooldown, size int, conquestValue float64) (placeID string) {
 	// PARAMETERS
 	url := "http://localhost:5555"
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger", "CloneHero",
@@ -89,9 +88,6 @@ func LaunchPixelWar(nbWorkerPerManager string, cooldown, size int, conquestValue
 		go m.Start()
 	}
 
-	if modeScript {
-		fmt.Scanln()
-	}
 	return
 }
 

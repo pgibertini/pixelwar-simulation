@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent/server"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/launcher"
@@ -26,8 +27,10 @@ func main() {
 	// size (int): the size (height and width) of the canvas
 	// conquestValue (int): value piloting how managers will be likely to expend their territory by drawing their image at different places (0: won't expand)
 
-	//launcher.LaunchPixelWar("proportional", 1, 500, 0, true)
-	//launcher.LaunchPixelWar("random", 1, 500, 5, true)
-	//launcher.LaunchPixelWar("50", 1, 200, 10, true)
-	launcher.LaunchPixelWar("50", 1, 500, 10, true)
+	//go launcher.LaunchPixelWar("proportional", 1, 500, 0)
+	//go launcher.LaunchPixelWar("random", 1, 500, 5)
+	//go launcher.LaunchPixelWar("50", 1, 200, 10)
+	go launcher.LaunchPixelWar("50", 1, 500, 10)
+
+	fmt.Scanln()
 }
