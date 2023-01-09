@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"github.com/rs/cors"
 )
 
 var debug bool
@@ -54,6 +55,7 @@ func (srv *Server) Start() {
 		MaxHeaderBytes: 1 << 20}
 
 	log.Println("Listening on", srv.address)
-
+	handler := cors.Default().Handler(mux)
+    http.ListenAndServe(":5555", handler)
 	go log.Fatal(s.ListenAndServe())
 }
