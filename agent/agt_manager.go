@@ -13,15 +13,16 @@ import (
 	"time"
 )
 
-func NewAgentManager(id string, hobby string, chat *Chat) *AgentManager {
+func NewAgentManager(id string, hobby string, conquestValue float64, chat *Chat) *AgentManager {
 	cin := make(chan interface{})
 	cout := make(chan FindWorkersResponse)
 	return &AgentManager{
-		id:    id,
-		hobby: hobby,
-		Chat:  chat,
-		Cout:  cin,
-		Cin:   cout,
+		id:            id,
+		hobby:         hobby,
+		Chat:          chat,
+		Cout:          cin,
+		Cin:           cout,
+		conquestValue: conquestValue,
 	}
 }
 
@@ -40,6 +41,7 @@ func (am *AgentManager) Start() {
 	am.updateWorkers()
 	am.LoadLayoutFromFile(fmt.Sprintf("images/%s", am.GetHobby()))
 
+	// image de base à placer
 	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
 		am.ImgLayout,
 		rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
@@ -50,11 +52,11 @@ func (am *AgentManager) Start() {
 	am.DistributeWork(workList)
 	time.Sleep(time.Duration(am.Chat.cooldown*len(workList[0])) * time.Second)
 
-	// place des pixels
+	// maintient ou agrandit son territoire
 	go func() {
 		for {
 			unplacedPixels := am.GetUnplacedPixels()
-			if len(unplacedPixels) < len(am.workers) {
+			if len(unplacedPixels) < int(float64(len(am.workers))*am.conquestValue) {
 				am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
 					am.ImgLayout,
 					rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
