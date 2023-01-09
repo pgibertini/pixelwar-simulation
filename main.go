@@ -15,7 +15,6 @@ func main() {
 
 	// Launch the pixel war
 
-	//launcher.LaunchPixelWar(false, true, 100, 0, 500, 0, 0, true)
-
-	launcher.LaunchPixelWar(false, false, 50, 1, 200, 10, 10, true)
+	//launcher.LaunchPixelWar("proportional", 1, 500, 0, true)
+	launcher.LaunchPixelWar("50", 200, 10, 10, true)
 }

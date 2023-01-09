@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func LaunchPixelWar(random bool, propo bool, nbAgents, cooldown, size, conquestMin, conquestMax int, modeScript bool) (placeID string) {
+func LaunchPixelWar(nbWorkerPerManager string, cooldown, size int, conquestValue float64, modeScript bool) (placeID string) {
 	// PARAMETERS
 	url := "http://localhost:5555"
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger", "CloneHero",
@@ -20,7 +20,7 @@ func LaunchPixelWar(random bool, propo bool, nbAgents, cooldown, size, conquestM
 		"OnePiece", "StarWars", "Technoblade"}
 
 	minWorkers := 5
-	maxWorkers := 10
+	maxWorkers := 30
 
 	hobbyWorkerMap := map[string]struct {
 		nWorkers    int
@@ -29,21 +29,25 @@ func LaunchPixelWar(random bool, propo bool, nbAgents, cooldown, size, conquestM
 
 	for _, h := range hobbies {
 		var nWorkers int
-		if random { // generate a random number between 5 and 200
+		switch nbWorkerPerManager {
+		case "random":
 			nWorkers = rand.Intn(maxWorkers-minWorkers+1) + minWorkers
-		} else if propo { //use a number proportional to the size of the image
+		case "proportional":
 			nWorkers = getNbWorkers(h)
-		} else { //use a fixed number
-			nWorkers = nbAgents
+		default:
+			n, err := strconv.Atoi(nbWorkerPerManager)
+			if err != nil {
+				log.Println("Incorrect nbWorkerPerManager", err)
+				return
+			} else {
+				nWorkers = n
+			}
 		}
-
-		floatVal := float64(conquestMin) + rand.Float64()*float64(conquestMax-conquestMin)
-		//floatVal := 3 + rand.Float64()*5
 
 		hobbyWorkerMap[h] = struct {
 			nWorkers    int
 			conquestVal float64
-		}{nWorkers, floatVal}
+		}{nWorkers, conquestValue}
 	}
 
 	rand.Seed(time.Now().UnixNano())

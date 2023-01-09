@@ -33,7 +33,7 @@ func (srv *Server) launch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	placeID := launcher.LaunchPixelWar(req.Random, req.Propo, req.NbAgents, req.Cooldown, req.Size, 1, 1, false)
+	placeID := launcher.LaunchPixelWar(req.NbWorkersPerManager, req.Cooldown, req.Size, 1, false)
 
 	serial, _ := json.Marshal(placeID)
 	w.Write(serial)
