@@ -1,9 +1,16 @@
 package agent
 
 import (
+	"flag"
 	"fmt"
 	"log"
 )
+
+var debug bool
+
+func init() {
+	flag.BoolVar(&debug, "debug-agt", false, "enable debug mode")
+}
 
 func NewChat(placeID string, url string, cooldown, height, width int) *Chat {
 	cin := make(chan interface{})
@@ -41,12 +48,16 @@ func (srv *Chat) Start() {
 }
 
 func (srv *Chat) registerManager(am *AgentManager) {
-	log.Printf("Registering a manager: ID=%s\n", am.GetID())
+	if debug {
+		log.Printf("Registering a manager: ID=%s\n", am.GetID())
+	}
 	srv.Ams = append(srv.Ams, am)
 }
 
 func (srv *Chat) registerWorker(aw *AgentWorker) {
-	log.Printf("Registering a worker: ID=%s\n", aw.GetID())
+	if debug {
+		log.Printf("Registering a worker: ID=%s\n", aw.GetID())
+	}
 	srv.Aws = append(srv.Aws, aw)
 }
 

@@ -20,7 +20,7 @@ func LaunchPixelWar(nbWorkerPerManager string, cooldown, size int, conquestValue
 		"OnePiece", "StarWars", "Technoblade"}
 
 	minWorkers := 5
-	maxWorkers := 30
+	maxWorkers := 50
 
 	hobbyWorkerMap := map[string]struct {
 		nWorkers    int

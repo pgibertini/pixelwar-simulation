@@ -15,7 +15,14 @@ func main() {
 
 	// Launch the pixel war
 
-	launcher.LaunchPixelWar("proportional", 1, 500, 0, true)
+	// PARAMETERS
+	// nbWorkerPerManager (string): can be set to "random" (random between 5 and 50), "proportional" (proportional to the image size) or you can pass an "int"
+	// cooldown (int): the cooldown (in seconds) between 2 pixels painted by a worker
+	// size (int): the size (height and width) of the canvas
+	// conquestValue (int): value piloting how managers will be likely to expend their territory by drawing their image at different places (0: won't expand)
+
+	//launcher.LaunchPixelWar("proportional", 1, 500, 0, true)
 	//launcher.LaunchPixelWar("random", 1, 500, 5, true)
 	//launcher.LaunchPixelWar("50", 1, 200, 10, true)
+	launcher.LaunchPixelWar("50", 1, 500, 10, true)
 }
