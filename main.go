@@ -17,10 +17,10 @@ func main() {
 	launcher.LaunchPixelWar(
 		false,
 		true,
-		1,
+		100,
 		0,
 		500,
-		100,
-		100,
+		0,
+		0,
 		true)
 }
