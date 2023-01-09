@@ -45,10 +45,9 @@ func (aw *AgentWorker) Start() {
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
 				err := aw.paintPixelRequest(pixel)
-				if err == nil {
-					aw.tab = aw.tab[1:]
-				} else {
-					log.Println(err)
+				aw.tab = aw.tab[1:]
+				if err != nil {
+					log.Println(err, pixel)
 				}
 				time.Sleep(time.Second * time.Duration(aw.Chat.GetCooldown()))
 			}
@@ -98,6 +97,6 @@ func (aw *AgentWorker) paintPixelRequest(pixel painting.HexPixel) (err error) {
 		return
 	}
 
-	log.Printf("%s painted pixel (%d, %d) with color %s", aw.id, req.X, req.Y, req.Color)
+	//log.Printf("%s painted pixel (%d, %d) with color %s", aw.id, req.X, req.Y, req.Color)
 	return
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"log"
+	"math/rand"
 	"strconv"
 	"time"
 )
@@ -14,7 +15,9 @@ func main() {
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger"}
 	nWorkers := 100
 	size := 500
-	cooldown := 5
+	cooldown := 0
+
+	rand.Seed(time.Now().UnixNano())
 
 	// create a new place
 	placeID := agt.CreateNewPlace(url, size, size, cooldown)

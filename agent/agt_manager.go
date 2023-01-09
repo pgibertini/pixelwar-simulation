@@ -36,16 +36,27 @@ func (am *AgentManager) GetHobby() string {
 }
 
 func (am *AgentManager) Start() {
-	rand.Seed(time.Now().UnixNano())
 	am.register()
 	am.updateWorkers()
 	am.LoadLayoutFromFile(fmt.Sprintf("images/%s", am.GetHobby()))
-	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
-		am.ImgLayout,
-		rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
-		rand.Intn(am.Chat.GetHeight()-am.Painting.Height),
-	))
-	am.DistributeWork()
+
+	// place des pixels
+	go func() {
+		for {
+			unplacedPixels := am.GetUnplacedPixels()
+			if len(unplacedPixels) < len(am.workers) {
+				am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
+					am.ImgLayout,
+					rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
+					rand.Intn(am.Chat.GetHeight()-am.Painting.Height),
+				))
+			}
+
+			workList := am.divideWork(am.GetUnplacedPixels())
+			am.DistributeWork(workList)
+			time.Sleep(time.Duration(am.Chat.cooldown*len(workList[0])) * time.Second)
+		}
+	}()
 }
 
 func (am *AgentManager) register() {
@@ -116,7 +127,7 @@ func (am *AgentManager) divideWork(pixels []painting.HexPixel) [][]painting.HexP
 	workList := make([][]painting.HexPixel, numWorkers)
 	for i := 0; i < numWorkers; i++ {
 		startIndex := i * workPerWorker
-		endIndex := startIndex + workPerWorker
+		endIndex := startIndex + workPerWorker + 1
 		workList[i] = pixels[startIndex:endIndex]
 	}
 
@@ -129,8 +140,7 @@ func (am *AgentManager) divideWork(pixels []painting.HexPixel) [][]painting.HexP
 }
 
 // DistributeWork distribute the list of pixel to place that are not already placed
-func (am *AgentManager) DistributeWork() {
-	workList := am.divideWork(am.GetUnplacedPixels())
+func (am *AgentManager) DistributeWork(workList [][]painting.HexPixel) {
 	for i, agt := range am.workers {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cin <- request
@@ -150,7 +160,7 @@ func (am *AgentManager) GetUnplacedPixels() []painting.HexPixel {
 
 	// Check which pixels in pixelsToPlace have not been placed on the canvas
 	for _, pixel := range am.pixelsToPlace {
-		if grid[pixel.Y][pixel.X] != pixel.Color {
+		if grid[pixel.X][pixel.Y] != pixel.Color {
 			unplacedPixels = append(unplacedPixels, pixel)
 		}
 	}
