@@ -10,16 +10,17 @@ import (
 
 func main() {
 	// PARAMETERS
-	url := "http://localhost:8080"
-	nWorkers := 100
+	url := "http://localhost:5555"
+	nWorkers := 10
 	size := 1000
+	cooldown := 10
 
 	// create a new place
-	placeID := agt.CreateNewPlace(url, size, size)
+	placeID := agt.CreateNewPlace(url, size, size, cooldown)
 	log.Printf("Playing on %s", placeID)
 
 	// chat for agents discussion
-	myChat := agt.NewChat()
+	myChat := agt.NewChat(placeID, url, cooldown, size, size)
 	go myChat.Start()
 
 	var hobbies = []string{"#FF0000", "#00FF00", "#0000FF"}
@@ -28,10 +29,10 @@ func main() {
 
 	// initializing managers and workers
 	for i, h := range hobbies {
-		managers = append(managers, agt.NewAgentManager(strconv.Itoa(i), h, myChat, placeID, url))
+		managers = append(managers, agt.NewAgentManager(strconv.Itoa(i), h, myChat))
 
 		for j := 0; j < nWorkers; j++ {
-			workers = append(workers, agt.NewAgentWorker(h+strconv.Itoa(j), []string{h}, myChat, placeID, url))
+			workers = append(workers, agt.NewAgentWorker(h+strconv.Itoa(j), []string{h}, myChat))
 		}
 	}
 
@@ -54,7 +55,7 @@ func main() {
 			}
 		}
 		painting.ShuffleHexPixels(pixels)
-		m.AddPixelsToBuffer(pixels)
+		m.AddPixelsToPlace(pixels)
 	}
 
 	// sending pixel to workers

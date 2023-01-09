@@ -7,17 +7,16 @@ import (
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/painting"
 	"log"
 	"net/http"
+	"time"
 )
 
-func NewAgentWorker(idAgt string, hobbiesAgt []string, chat *Chat, placeID string, url string) *AgentWorker {
+func NewAgentWorker(id string, hobbies []string, chat *Chat) *AgentWorker {
 	channel := make(chan interface{})
 	return &AgentWorker{
-		id:      idAgt,
-		Hobbies: hobbiesAgt,
-		Cout:    channel,
+		id:      id,
+		Hobbies: hobbies,
+		Cin:     channel,
 		Chat:    chat,
-		placeId: placeID,
-		srvUrl:  url,
 	}
 }
 
@@ -27,7 +26,7 @@ func (aw *AgentWorker) Start() {
 	// écoute les instructions
 	go func() {
 		for {
-			value := <-aw.Cout
+			value := <-aw.Cin
 			switch value.(type) {
 			case sendPixelsRequest:
 				aw.mu.Lock()
@@ -45,14 +44,19 @@ func (aw *AgentWorker) Start() {
 			aw.mu.Lock()
 			if len(aw.tab) > 0 {
 				pixel := aw.tab[0]
-				aw.drawOnePixel(pixel)
+				err := aw.paintPixelRequest(pixel)
 				aw.tab = aw.tab[1:]
-				//time.Sleep(time.Second)
+				if err != nil {
+					log.Println(err, pixel)
+				}
+				time.Sleep(time.Second * time.Duration(aw.Chat.GetCooldown()))
 			}
 			aw.mu.Unlock()
 		}
 	}()
 }
+
+// GETTERS
 
 func (aw *AgentWorker) GetID() string {
 	return aw.id
@@ -62,9 +66,15 @@ func (aw *AgentWorker) GetHobbies() []string {
 	return aw.Hobbies
 }
 
-func (aw *AgentWorker) drawOnePixel(pixel painting.HexPixel) {
+func (aw *AgentWorker) register() {
+	(aw.Chat).Cin <- aw
+}
+
+// HTTP REQUEST
+
+func (aw *AgentWorker) paintPixelRequest(pixel painting.HexPixel) (err error) {
 	req := PaintPixelRequest{
-		PlaceID: aw.placeId,
+		PlaceID: aw.Chat.GetPlaceID(),
 		UserID:  aw.id,
 		X:       pixel.X,
 		Y:       pixel.Y,
@@ -72,7 +82,7 @@ func (aw *AgentWorker) drawOnePixel(pixel painting.HexPixel) {
 	}
 
 	// sérialisation de la requête
-	url := aw.srvUrl + "/paint_pixel"
+	url := aw.Chat.GetURL() + "/paint_pixel"
 	data, _ := json.Marshal(req)
 
 	// envoi de la requête
@@ -80,7 +90,6 @@ func (aw *AgentWorker) drawOnePixel(pixel painting.HexPixel) {
 
 	// traitement de la réponse
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
@@ -88,10 +97,6 @@ func (aw *AgentWorker) drawOnePixel(pixel painting.HexPixel) {
 		return
 	}
 
-	log.Printf("%s painted pixel (%d, %d) with color %s", aw.id, req.X, req.Y, req.Color)
+	//log.Printf("%s painted pixel (%d, %d) with color %s", aw.id, req.X, req.Y, req.Color)
 	return
-}
-
-func (aw *AgentWorker) register() {
-	(aw.Chat).Cin <- aw
 }

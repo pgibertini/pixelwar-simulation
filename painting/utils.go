@@ -1,8 +1,10 @@
 package painting
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
+	"os"
 	"regexp"
 	"strconv"
 )
@@ -47,4 +49,58 @@ func ShuffleHexPixels(slice []HexPixel) {
 		j := rand.Intn(i + 1)
 		slice[i], slice[j] = slice[j], slice[i]
 	}
+}
+
+func FileToLayout(filePath string) (int, int, [][]HexColor, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return 0, 0, nil, err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanWords)
+
+	// Get the dimensions of the layout
+	scanner.Scan()
+	str := scanner.Text()
+	height, err := strconv.Atoi(str)
+	if err != nil {
+		return 0, 0, nil, err
+	}
+	scanner.Scan()
+	str = scanner.Text()
+	width, err := strconv.Atoi(str)
+	if err != nil {
+		return 0, 0, nil, err
+	}
+
+	// Create the layout
+	layout := make([][]HexColor, height)
+	for i := 0; i < height; i++ {
+		// Create each row of the layout
+		layout[i] = make([]HexColor, width)
+		for j := 0; j < width; j++ {
+			scanner.Scan()
+			str = scanner.Text()
+			layout[i][j] = HexColor(str)
+		}
+	}
+
+	return width, height, layout, nil
+}
+
+func ImgLayoutToPixelList(layout [][]HexColor, xOffset, yOffset int) []HexPixel {
+	pixels := make([]HexPixel, 0)
+	for y, row := range layout {
+		for x, color := range row {
+			pixel := HexPixel{
+				X:     x + xOffset,
+				Y:     y + yOffset,
+				Color: color,
+			}
+			pixels = append(pixels, pixel)
+		}
+	}
+	return pixels
 }

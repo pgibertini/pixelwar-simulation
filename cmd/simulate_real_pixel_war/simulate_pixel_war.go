@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// PARAMETERS
-	url := "http://localhost:8080"
+	url := "http://localhost:5555"
 
 	// Open the CSV file
 	// Get the full dataset at https://www.reddit.com/r/place/comments/txvk2d/rplace_datasets_april_fools_2022/
@@ -32,7 +32,7 @@ func main() {
 	reader.Read()
 
 	// create a new place
-	placeID := agt.CreateNewPlace(url, 2000, 2000)
+	placeID := agt.CreateNewPlace(url, 2000, 2000, 0)
 
 	// Read each record
 	i := 0
@@ -70,7 +70,7 @@ func main() {
 
 		// Send a paint_pixel request to the server
 		_, err = http.Post(
-			"http://localhost:8080/paint_pixel",
+			url+"/paint_pixel",
 			"application/json",
 			strings.NewReader(fmt.Sprintf(`{"user-id":"%s","place-id":"%s","color":"%s","x":%d,"y":%d}`,
 				userID,

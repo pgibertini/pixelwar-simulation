@@ -5,10 +5,15 @@ import (
 	"log"
 )
 
-func NewChat() *Chat {
-	cin := make(chan (interface{}))
+func NewChat(placeID string, url string, cooldown, height, width int) *Chat {
+	cin := make(chan interface{})
 	return &Chat{
-		Cin: cin,
+		Cin:      cin,
+		srvUrl:   url,
+		placeId:  placeID,
+		cooldown: cooldown,
+		height:   height,
+		width:    width,
 	}
 }
 
@@ -23,7 +28,7 @@ func (srv *Chat) Start() {
 				srv.registerWorker(value.(*AgentWorker))
 			case FindWorkersRequest:
 				srv.findWorkersRespond(value.(FindWorkersRequest))
-				(srv.Ams[GetManagerIndex(srv.Ams, (value.(FindWorkersRequest)).Id_manager)]).C_findWorkers <- srv.findWorkersRespond(value.(FindWorkersRequest))
+				(srv.Ams[GetManagerIndex(srv.Ams, (value.(FindWorkersRequest)).IdManager)]).Cin <- srv.findWorkersRespond(value.(FindWorkersRequest))
 			default:
 				fmt.Println("Error: bad request")
 			}
@@ -34,12 +39,12 @@ func (srv *Chat) Start() {
 }
 
 func (srv *Chat) registerManager(am *AgentManager) {
-	fmt.Printf("Registering a manager. ID = %s\n", am.GetID())
+	log.Printf("Registering a manager: ID=%s\n", am.GetID())
 	srv.Ams = append(srv.Ams, am)
 }
 
 func (srv *Chat) registerWorker(aw *AgentWorker) {
-	fmt.Printf("Registering a worker. ID = %s\n", aw.GetID())
+	log.Printf("Registering a worker: ID=%s\n", aw.GetID())
 	srv.Aws = append(srv.Aws, aw)
 }
 
@@ -53,10 +58,32 @@ func (srv *Chat) findWorkersRespond(req FindWorkersRequest) FindWorkersResponse 
 	return resp
 }
 
+// GETTERS
+
 func (srv *Chat) GetManagers() []*AgentManager {
 	return srv.Ams
 }
 
 func (srv *Chat) GetWorkers() []*AgentWorker {
 	return srv.Aws
+}
+
+func (srv *Chat) GetURL() string {
+	return srv.srvUrl
+}
+
+func (srv *Chat) GetPlaceID() string {
+	return srv.placeId
+}
+
+func (srv *Chat) GetCooldown() int {
+	return srv.cooldown
+}
+
+func (srv *Chat) GetHeight() int {
+	return srv.height
+}
+
+func (srv *Chat) GetWidth() int {
+	return srv.width
 }

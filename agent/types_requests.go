@@ -49,13 +49,13 @@ type GetDiffResponse struct {
 }
 
 type sendPixelsRequest struct {
-	pixels []painting.HexPixel
-	id_am  string
+	pixels    []painting.HexPixel
+	idManager string
 }
 
 type FindWorkersRequest struct {
-	Id_manager string
-	Hobby      string
+	IdManager string
+	Hobby     string
 }
 
 type FindWorkersResponse struct {

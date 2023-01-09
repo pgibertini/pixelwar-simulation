@@ -6,32 +6,34 @@ import (
 )
 
 type Chat struct {
-	Ams []*AgentManager
-	Aws []*AgentWorker
-	Cin chan interface{}
+	Ams      []*AgentManager
+	Aws      []*AgentWorker
+	Cin      chan interface{}
+	srvUrl   string
+	placeId  string
+	cooldown int
+	height   int
+	width    int
 }
 
 type AgentWorker struct {
 	id      string
 	tab     []painting.HexPixel
 	Hobbies []string
-	Cout    chan interface{}
+	Cin     chan interface{}
 	Chat    *Chat
-	srvUrl  string
-	placeId string
 	mu      sync.Mutex
 }
 
 type AgentManager struct {
 	id            string
-	agts          []*AgentWorker
+	workers       []*AgentWorker
 	hobby         string
+	conquestValue float64
 	Chat          *Chat
 	Painting      painting.ManagerPainting
-	imgLayout     [][]painting.HexColor
+	ImgLayout     [][]painting.HexColor
 	pixelsToPlace []painting.HexPixel
-	Cin           chan interface{}
-	C_findWorkers chan FindWorkersResponse
-	srvUrl        string
-	placeId       string
+	Cout          chan interface{}
+	Cin           chan FindWorkersResponse
 }
