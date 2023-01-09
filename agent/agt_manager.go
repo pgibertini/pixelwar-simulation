@@ -39,7 +39,7 @@ func (am *AgentManager) Start() {
 	rand.Seed(time.Now().UnixNano())
 	am.register()
 	am.updateWorkers()
-	am.LoadLayoutFromFile(fmt.Sprintf("images/%s", am.GetHobby()))
+	am.LoadLayoutFromFile(fmt.Sprintf("../../images/%s", am.GetHobby()))
 	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
 		am.ImgLayout,
 		rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
