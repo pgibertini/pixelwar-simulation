@@ -42,7 +42,7 @@ func (srv *Server) doGetDiff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if debug {
+	if Debug {
 		log.Printf("get_diff: place-id=%s\n", req.PlaceID)
 	}
 

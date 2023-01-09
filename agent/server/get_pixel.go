@@ -49,7 +49,7 @@ func (srv *Server) doGetPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
-	if debug {
+	if Debug {
 		log.Printf("get_pixel: coord=(%d, %d)\n", req.X, req.Y)
 	}
 

@@ -3,17 +3,16 @@ package server
 import (
 	"flag"
 	"fmt"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"time"
-	"github.com/rs/cors"
 )
 
-var debug bool
+var Debug bool
 
 func init() {
-	flag.BoolVar(&debug, "debug", true, "enable debug mode")
-	// TODO: fix to have value passed by a flag
+	flag.BoolVar(&Debug, "debug-srv", false, "enable debug mode")
 }
 
 func NewServer(id string, addr string) *Server {
@@ -56,6 +55,6 @@ func (srv *Server) Start() {
 
 	log.Println("Listening on", srv.address)
 	handler := cors.Default().Handler(mux)
-    http.ListenAndServe(":5555", handler)
+	http.ListenAndServe(":5555", handler)
 	go log.Fatal(s.ListenAndServe())
 }

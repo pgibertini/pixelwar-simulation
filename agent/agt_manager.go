@@ -108,7 +108,9 @@ func (am *AgentManager) updateWorkers() {
 	}
 
 	//fmt.Println("Voici ma liste finale de workers : ", am.workers)
-	log.Printf("Manager %s now has %d workers", am.id, len(am.workers))
+	if Debug {
+		log.Printf("Manager %s now has %d workers", am.id, len(am.workers))
+	}
 }
 
 // LoadLayoutFromFile load a layout from a given file

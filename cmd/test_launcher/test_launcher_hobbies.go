@@ -6,12 +6,8 @@ import (
 
 func main() {
 	launcher.LaunchPixelWar(
-		false,
-		true,
-		1,
+		"random",
 		5,
 		500,
-		1,
-		1,
-		true)
+		1)
 }

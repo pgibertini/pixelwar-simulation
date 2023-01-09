@@ -76,7 +76,7 @@ func (srv *Server) doPaintPixel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// traitement de la requête
-	if debug {
+	if Debug {
 		log.Printf("paint_pixel: place-id=%s ; user-id=%s ; coord=(%d, %d) ; color=%s\n", req.PlaceID, req.UserID, req.X, req.Y, req.Color)
 	}
 
