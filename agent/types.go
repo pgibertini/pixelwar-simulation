@@ -29,6 +29,7 @@ type AgentManager struct {
 	id            string
 	workers       []*AgentWorker
 	hobby         string
+	conquestValue float64
 	Chat          *Chat
 	Painting      painting.ManagerPainting
 	ImgLayout     [][]painting.HexColor
