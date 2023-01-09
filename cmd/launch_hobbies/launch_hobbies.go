@@ -1,18 +1,15 @@
-package Hobbies
+package main
 
 import (
-	"bufio"
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"log"
 	"math/rand"
-	"os"
-	"path/filepath"
 	"strconv"
 	"time"
 )
 
-func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int, modeScript bool) (placeID string) {
+func main() {
 	// PARAMETERS
 	url := "http://localhost:5555"
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger", "CloneHero",
@@ -20,7 +17,9 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 		"OnePiece", "StarWars", "Technoblade"}
 
 	minWorkers := 5
-	maxWorkers := 10
+	maxWorkers := 200
+	size := 500
+	cooldown := 0
 
 	hobbyWorkerMap := map[string]struct {
 		nWorkers int
@@ -28,14 +27,8 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 	}{}
 
 	for _, h := range hobbies {
-		var nWorkers int
-		if random { // generate a random number between 5 and 200
-			nWorkers = rand.Intn(maxWorkers-minWorkers+1) + minWorkers
-		} else if propo { //use a number proportional to the size of the image
-			nWorkers = getNbWorkers(h)
-		} else { //use a fixed number
-			nWorkers = nbAgents
-		}
+		// generate a random number between 5 and 200
+		nWorkers := rand.Intn(maxWorkers-minWorkers+1) + minWorkers
 		floatVal := 3 + rand.Float64()*5
 		hobbyWorkerMap[h] = struct {
 			nWorkers int
@@ -46,7 +39,7 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 	rand.Seed(time.Now().UnixNano())
 
 	// create a new place
-	placeID = agt.CreateNewPlace(url, size, size, cooldown)
+	placeID := agt.CreateNewPlace(url, size, size, cooldown)
 	log.Printf("Playing on %s", placeID)
 
 	// chat for agents discussion
@@ -78,42 +71,5 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 		go m.Start()
 	}
 
-	if modeScript {
-		fmt.Scanln()
-	}
-	return
-}
-
-func getNbWorkers(hobby string) (nWorkers int) {
-	filePath := filepath.Join("images", hobby)
-	f, err := os.Open(filePath)
-	if err != nil {
-		return 1
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanWords)
-
-	// Get the dimensions of the layout
-	scanner.Scan()
-	str := scanner.Text()
-	height, err := strconv.Atoi(str)
-	if err != nil {
-		return 1
-	}
-	scanner.Scan()
-	str = scanner.Text()
-	width, err := strconv.Atoi(str)
-	if err != nil {
-		return 1
-	}
-	return max(1, width*height/200)
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	fmt.Scanln()
 }

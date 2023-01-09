@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
-	Hobbies "gitlab.utc.fr/pixelwar_ia04/pixelwar/cmd/launch_hobbies"
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/launcher"
 	"net/http"
 )
 
@@ -33,7 +33,7 @@ func (srv *Server) launch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	placeID := Hobbies.LaunchHobbies(req.Random, req.Propo, req.NbAgents, req.Cooldown, req.Size, false)
+	placeID := launcher.LaunchPixelWar(req.Random, req.Propo, req.NbAgents, req.Cooldown, req.Size, 1, 1, false)
 
 	serial, _ := json.Marshal(placeID)
 	w.Write(serial)
