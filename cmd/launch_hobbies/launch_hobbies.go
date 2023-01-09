@@ -1,4 +1,4 @@
-package main
+package Hobbies
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func main() {
+func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int) {
 	// PARAMETERS
 	url := "http://localhost:5555"
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger", "CloneHero",
@@ -17,9 +17,7 @@ func main() {
 		"OnePiece", "StarWars", "Technoblade"}
 
 	minWorkers := 5
-	maxWorkers := 20
-	size := 500
-	cooldown := 0
+	maxWorkers := 10
 
 	hobbyWorkerMap := map[string]struct {
 		nWorkers int
@@ -27,8 +25,15 @@ func main() {
 	}{}
 
 	for _, h := range hobbies {
-		// generate a random number between 5 and 200
-		nWorkers := rand.Intn(maxWorkers-minWorkers+1) + minWorkers
+		var nWorkers int
+		if random { // generate a random number between 5 and 200
+			nWorkers = rand.Intn(maxWorkers-minWorkers+1) + minWorkers
+		} else if propo { //use a number proportional to the size of the image
+			//nWorkers = getNbWorkers(h)
+			nWorkers = nbAgents
+		} else { //use a fixed number
+			nWorkers = nbAgents
+		}
 		floatVal := 3 + rand.Float64()*5
 		hobbyWorkerMap[h] = struct {
 			nWorkers int
@@ -73,3 +78,7 @@ func main() {
 
 	fmt.Scanln()
 }
+
+/*func getNbWorkers(hobby string) (nWorkers int) {
+
+}*/
