@@ -27,8 +27,10 @@ func (srv *Chat) Start() {
 			case *AgentWorker:
 				srv.registerWorker(value.(*AgentWorker))
 			case FindWorkersRequest:
-				srv.findWorkersRespond(value.(FindWorkersRequest))
-				(srv.Ams[GetManagerIndex(srv.Ams, (value.(FindWorkersRequest)).IdManager)]).Cin <- srv.findWorkersRespond(value.(FindWorkersRequest))
+				go func(req FindWorkersRequest) {
+					resp := srv.findWorkersRespond(req)
+					(srv.Ams[GetManagerIndex(srv.Ams, req.IdManager)]).Cin <- resp
+				}(value.(FindWorkersRequest))
 			default:
 				fmt.Println("Error: bad request")
 			}
