@@ -9,6 +9,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -39,7 +40,7 @@ func (am *AgentManager) GetHobby() string {
 func (am *AgentManager) Start() {
 	am.register()
 	am.updateWorkers()
-	am.LoadLayoutFromFile(fmt.Sprintf("images/%s", am.GetHobby()))
+	am.LoadLayoutFromFile(filepath.Join("images", am.GetHobby()))
 
 	// image de base à placer
 	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(

@@ -17,7 +17,7 @@ func main() {
 		"OnePiece", "StarWars", "Technoblade"}
 
 	minWorkers := 5
-	maxWorkers := 200
+	maxWorkers := 20
 	size := 500
 	cooldown := 0
 
@@ -29,7 +29,7 @@ func main() {
 	for _, h := range hobbies {
 		// generate a random number between 5 and 200
 		nWorkers := rand.Intn(maxWorkers-minWorkers+1) + minWorkers
-		floatVal := rand.Float64() * 5
+		floatVal := 3 + rand.Float64()*5
 		hobbyWorkerMap[h] = struct {
 			nWorkers int
 			floatVal float64
