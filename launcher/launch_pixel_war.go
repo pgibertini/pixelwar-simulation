@@ -37,7 +37,9 @@ func LaunchPixelWar(random bool, propo bool, nbAgents, cooldown, size, conquestM
 			nWorkers = nbAgents
 		}
 
-		floatVal := float64(conquestMin) + rand.Float64()*float64(conquestMax-conquestMin)
+		//floatVal := float64(conquestMin) + rand.Float64()*float64(conquestMax-conquestMin)
+		floatVal := 3 + rand.Float64()*5
+
 		hobbyWorkerMap[h] = struct {
 			nWorkers    int
 			conquestVal float64
