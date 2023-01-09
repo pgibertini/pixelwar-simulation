@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int) {
+func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int, modeScript bool) (placeID string) {
 	// PARAMETERS
 	url := "http://localhost:5555"
 	var hobbies = []string{"2b2t", "Asterix", "Avengers", "BlueMario", "Canada", "ChronoTrigger", "CloneHero",
@@ -46,7 +46,7 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 	rand.Seed(time.Now().UnixNano())
 
 	// create a new place
-	placeID := agt.CreateNewPlace(url, size, size, cooldown)
+	placeID = agt.CreateNewPlace(url, size, size, cooldown)
 	log.Printf("Playing on %s", placeID)
 
 	// chat for agents discussion
@@ -78,7 +78,10 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 		go m.Start()
 	}
 
-	fmt.Scanln()
+	if modeScript {
+		fmt.Scanln()
+	}
+	return
 }
 
 func getNbWorkers(hobby string) (nWorkers int) {

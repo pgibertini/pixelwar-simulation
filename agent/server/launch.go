@@ -33,7 +33,10 @@ func (srv *Server) launch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Hobbies.LaunchHobbies(req.Random, req.Propo, req.NbAgents, req.Cooldown, req.Size)
+	placeID := Hobbies.LaunchHobbies(req.Random, req.Propo, req.NbAgents, req.Cooldown, req.Size, false)
+
+	serial, _ := json.Marshal(placeID)
+	w.Write(serial)
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -70,3 +70,7 @@ type LaunchRequest struct {
 	Cooldown int  `json:"cooldown"`
 	Size     int  `json:"size"`
 }
+
+type LaunchResponse struct {
+	placeID string
+}
