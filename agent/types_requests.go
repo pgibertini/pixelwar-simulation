@@ -62,3 +62,15 @@ type FindWorkersResponse struct {
 	Workers []*AgentWorker
 	//places  map[string]*Place
 }
+
+type LaunchRequest struct {
+	Random   bool `json:"random"`
+	Propo    bool `json:"propo"`
+	NbAgents int  `json:"nbAgents"`
+	Cooldown int  `json:"cooldown"`
+	Size     int  `json:"size"`
+}
+
+type LaunchResponse struct {
+	placeID string
+}

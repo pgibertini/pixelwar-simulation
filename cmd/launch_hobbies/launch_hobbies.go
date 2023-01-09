@@ -17,7 +17,7 @@ func main() {
 		"OnePiece", "StarWars", "Technoblade"}
 
 	minWorkers := 5
-	maxWorkers := 20
+	maxWorkers := 200
 	size := 500
 	cooldown := 0
 
