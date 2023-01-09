@@ -1,10 +1,13 @@
 package Hobbies
 
 import (
+	"bufio"
 	"fmt"
 	agt "gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"log"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -29,8 +32,7 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 		if random { // generate a random number between 5 and 200
 			nWorkers = rand.Intn(maxWorkers-minWorkers+1) + minWorkers
 		} else if propo { //use a number proportional to the size of the image
-			//nWorkers = getNbWorkers(h)
-			nWorkers = nbAgents
+			nWorkers = getNbWorkers(h)
 		} else { //use a fixed number
 			nWorkers = nbAgents
 		}
@@ -79,6 +81,36 @@ func LaunchHobbies(random bool, propo bool, nbAgents int, cooldown int, size int
 	fmt.Scanln()
 }
 
-/*func getNbWorkers(hobby string) (nWorkers int) {
+func getNbWorkers(hobby string) (nWorkers int) {
+	filePath := filepath.Join("images", hobby)
+	f, err := os.Open(filePath)
+	if err != nil {
+		return 1
+	}
+	defer f.Close()
 
-}*/
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanWords)
+
+	// Get the dimensions of the layout
+	scanner.Scan()
+	str := scanner.Text()
+	height, err := strconv.Atoi(str)
+	if err != nil {
+		return 1
+	}
+	scanner.Scan()
+	str = scanner.Text()
+	width, err := strconv.Atoi(str)
+	if err != nil {
+		return 1
+	}
+	return max(1, width*height/200)
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
