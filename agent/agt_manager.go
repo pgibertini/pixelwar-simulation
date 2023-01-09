@@ -40,6 +40,16 @@ func (am *AgentManager) Start() {
 	am.updateWorkers()
 	am.LoadLayoutFromFile(fmt.Sprintf("images/%s", am.GetHobby()))
 
+	am.AddPixelsToPlace(painting.ImgLayoutToPixelList(
+		am.ImgLayout,
+		rand.Intn(am.Chat.GetWidth()-am.Painting.Width),
+		rand.Intn(am.Chat.GetHeight()-am.Painting.Height),
+	))
+
+	workList := am.divideWork(am.pixelsToPlace)
+	am.DistributeWork(workList)
+	time.Sleep(time.Duration(am.Chat.cooldown*len(workList[0])) * time.Second)
+
 	// place des pixels
 	go func() {
 		for {
@@ -51,8 +61,8 @@ func (am *AgentManager) Start() {
 					rand.Intn(am.Chat.GetHeight()-am.Painting.Height),
 				))
 			}
-
 			workList := am.divideWork(am.GetUnplacedPixels())
+
 			am.DistributeWork(workList)
 			time.Sleep(time.Duration(am.Chat.cooldown*len(workList[0])) * time.Second)
 		}
@@ -128,6 +138,9 @@ func (am *AgentManager) divideWork(pixels []painting.HexPixel) [][]painting.HexP
 	for i := 0; i < numWorkers; i++ {
 		startIndex := i * workPerWorker
 		endIndex := startIndex + workPerWorker + 1
+		if endIndex > len(pixels) {
+			endIndex = len(pixels)
+		}
 		workList[i] = pixels[startIndex:endIndex]
 	}
 
@@ -144,6 +157,7 @@ func (am *AgentManager) DistributeWork(workList [][]painting.HexPixel) {
 	for i, agt := range am.workers {
 		request := sendPixelsRequest{workList[i], am.id}
 		agt.Cin <- request
+		time.Sleep(time.Duration(2*rand.Float64()*(float64(am.Chat.GetCooldown())/float64(len(am.workers)))) * time.Second)
 	}
 }
 
