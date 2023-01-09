@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-var debug bool
+var Debug bool
 
 func init() {
-	flag.BoolVar(&debug, "debug-srv", false, "enable debug mode")
+	flag.BoolVar(&Debug, "debug-srv", false, "enable debug mode")
 }
 
 func NewServer(id string, addr string) *Server {

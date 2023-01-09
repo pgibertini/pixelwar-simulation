@@ -1,19 +1,24 @@
 package main
 
 import (
+	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/agent/server"
 	"gitlab.utc.fr/pixelwar_ia04/pixelwar/launcher"
 	"time"
 )
 
 func main() {
-	// server for canvas requests
+	// Set debug value to print the logs
+	server.Debug = false
+	agent.Debug = false
+
+	// Creating server
 	myServer := server.NewServer("TEST", "127.0.0.1:5555")
 	go myServer.Start()
 
 	time.Sleep(time.Second)
 
-	// Launch the pixel war
+	// Launching the pixel war
 
 	// PARAMETERS
 	// nbWorkerPerManager (string): can be set to "random" (random between 5 and 50), "proportional" (proportional to the image size) or you can pass an "int"

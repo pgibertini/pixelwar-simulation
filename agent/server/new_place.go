@@ -49,7 +49,7 @@ func (srv *Server) doNewPlace(w http.ResponseWriter, r *http.Request) {
 	resp := agt.NewPlaceResponse{PlaceID: id}
 	w.WriteHeader(http.StatusCreated)
 
-	if debug {
+	if Debug {
 		log.Printf("new_place: place-id=%s\n", id)
 	}
 

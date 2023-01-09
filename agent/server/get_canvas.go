@@ -47,7 +47,7 @@ func (srv *Server) doGetCanvas(w http.ResponseWriter, r *http.Request) {
 	gridWidth := srv.places[req.PlaceID].canvas.GetWidth()
 	grid := &srv.places[req.PlaceID].canvas.Grid
 
-	if debug {
+	if Debug {
 		log.Printf("get_canvas: place-id=%s\n", req.PlaceID)
 	}
 

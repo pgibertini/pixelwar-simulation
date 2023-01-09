@@ -108,7 +108,7 @@ func (am *AgentManager) updateWorkers() {
 	}
 
 	//fmt.Println("Voici ma liste finale de workers : ", am.workers)
-	if debug {
+	if Debug {
 		log.Printf("Manager %s now has %d workers", am.id, len(am.workers))
 	}
 }
