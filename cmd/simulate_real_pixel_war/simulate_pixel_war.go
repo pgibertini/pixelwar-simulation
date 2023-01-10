@@ -34,6 +34,8 @@ func main() {
 	// create a new place
 	placeID := agt.CreateNewPlace(url, 2000, 2000, 0)
 
+	fmt.Println("Basic front-end: ", url+"/canvas?placeID="+placeID)
+
 	// Read each record
 	i := 0
 	for {
