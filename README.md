@@ -90,6 +90,8 @@ Lien du dépôt Git : https://gitlab.utc.fr/pixelwar_ia04/pixelwar
 Installation avec `go install` (usage limité) :
 > `go install -v gitlab.utc.fr/pixelwar_ia04/pixelwar@latest`
 
+**Attention :** l'installation avec `go install` nécessite que dossier `images` soit présent dans le repértoire depuis lequel vous souhaitez lancer l'éxecutable
+
 Installation avec `git clone` (recommandé pour customisation des méta-paramètres dans `main.go`) :
 > `git clone https://gitlab.utc.fr/pixelwar_ia04/pixelwar.git`
 
@@ -98,6 +100,8 @@ Installation avec `git clone` (recommandé pour customisation des méta-paramèt
 #### 1. Lancement de la simulation
 
 Si installation du back-end avec `go install` : `$GOPATH/bin/pixelwar`
+> Attention : le dossier `images` doit être présent dans le repértoire depuis lequel vous lancer l'éxecutable
+
 Si installation du back-end avec `git clone` : `go run main.go`
 
 Lancer le *front-end* avec `npm start` puis accéder au *place* `1` tel que décrit dans "Lancement du *front-end*" (ou à défaut, accéder directement au *front-end* natif à http://localhost:5555/canvas?placeID=place1)
