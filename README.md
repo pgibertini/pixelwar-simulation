@@ -72,7 +72,10 @@ Cela devrait ouvrir une page dans votre navigateur à sur l'url http://localhost
 **5.** Saisir `1` dans la case la `place-id` (en haut à droite) afin de renseigner l'id du `place` que l'on souhaite visualiser
 **6.** Cliquer sur `start` pour débuter l'affichage
 
+**En cas de problème, rafraîchir et saisir à nouveau le `place-id`**
+
 > **Nota Bene :** en complément (ou en cas de problème), un front-end basique en pure javascript est disponible directement sur le *back-end*
+>
 >
 > Pour y accéder, lancer le back-end et acccéder à l'url suivante depuis votre navigateur : http://localhost:5555/canvas?placeID=place1
 
@@ -87,7 +90,7 @@ Lien du dépôt Git : https://gitlab.utc.fr/pixelwar_ia04/pixelwar
 Installation avec `go install` (usage limité) :
 > `go install -v gitlab.utc.fr/pixelwar_ia04/pixelwar@latest`
 
-Installation avec `git clone` :
+Installation avec `git clone` (recommandé pour customisation des méta-paramètres dans `main.go`) :
 > `git clone https://gitlab.utc.fr/pixelwar_ia04/pixelwar.git`
 
 ### 2.b Usage
@@ -187,7 +190,7 @@ Fonctionnement :
 > 3 - Charge son calque
 > **Goroutine :** regarde les éléments de son calque qui ne sont pas placés (ou qui ont été volés), envoie des instructions aux agents `Worker` en conséquence
 
-L'image est dessinée à un endroit aléatoire de `canvas`.
+L'image est dessinée à un endroit aléatoire du `canvas`.
 
 Le `Manager` peut décider de dessiner son image à plusieurs endroits différents s'il a déjà complété son image à d'autres endroits, et également en fonction de son paramètre `conquestValue` (plus la valeur est élevée, plus l'agent `Manager` aura tendance à vouloir dessiner son image à plusieurs endoits différents. Si la valeur est `0`, il ne la dessinera qu'à un seul endroit puis la défendra).
 
@@ -395,14 +398,18 @@ Nous avons également rendu possible le zoom molette et le déplacement sur celu
 
 ## 4. Critique du projet
 
+Nous sommes heureux d'avoir pu aboutir à un projet fonctionnel implémentant un premier comportement des agents. Nous avons énormément appris grâce à ce projet que ça soit sur les systèmes multi-agents ou les technologies `Go` et `REST`.
+
+Néanmoins, par manque de temps, nous n'avons pas développé toutes nos idées et émettons quelques critiques à l'égart de notre projet :
+
 - Il serait mieux de pouvoir lancer la simulation depuis le *front-end*. Cependant cela nécessiterait des changements dans le code que nous n'avons pas eu le temps d'implémenter.
 
 - Nous aurions également pu rajouter des stratégies d'abandon, si un groupe n'arrive pas à remplir son dessin après un certain temps, il abandonne cet emplacement et essaye autre part.
 
 - L'emplacement du dessin est aléatoire, cela est logique au début car tous les agents sont lancés en même temps et regardent donc le même canvas vide. Cependant, comme notre système support la création d'agents managers et workers au milieu de l'exécution, il serait mieux si les managers vérifient si l'emplacement voulu est bien vide, ou capable d'être volé à un autre groupe.
 
-- Il est également possible de donner plusieurs hobby à chaque `worker`, cependant ils n'en ont qu'un seul actuellement car ils sont créés en même temps que leur manager.
+- Il est également possible de donner plusieurs hobby à chaque agent `Worker`, cependant ils n'en ont qu'un seul actuellement car ils sont créés en même temps que leur manager.
 
-- Chaque manager n'a qu'un seul dessin lié à son hobby, qu'il reproduit lorsqu'il essaye de prendre plus de place. Il serait possible d'avoir plusieurs dessins par hobby, comme dans la vraie Pixelwar.
+- Chaque `Manager` n'a qu'un seul dessin lié à son hobby, qu'il reproduit lorsqu'il essaye de prendre plus de place. Il serait possible d'avoir plusieurs dessins par hobby, comme dans la vraie Pixelwar.
 
 - La représentation de la grille sur le *front-end* utilise un *canvas* pour représenter les pixels, ce qui peut donner un rendu un peu flou lorsque l'on zoom.
