@@ -1,4 +1,8 @@
-# PIXELWAR IA04
+# Piwel War simulation
+
+This project was realized in the context of the IA04 course "Multi-agent systems" at the University of Technology of Compiègne (France).
+
+*To be translated in english and adapted for public repo*.
 
 ## Contributeurs
 
